@@ -1,0 +1,15 @@
+//# Uses //
+@use './Shared/styles/mixins/CustomProps' as CustomProps;
+@use './Shared/styles/default/text' as text;
+@use './Shared/styles/themes' as themes;
+
+:root {
+    @include CustomProps.CustomProps(themes.$light-theme);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    font-family: text.$font-family;
+}

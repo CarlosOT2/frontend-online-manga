@@ -1,0 +1,120 @@
+//# Use
+@use '../../Shared/styles/default/border-radius' as border-radius;
+@use '../../Shared/styles/default/transition-time' as transition-time;
+@use '../../Shared/styles/mixins/no-select' as no-select;
+@use '../../Shared/styles/default/text.scss' as text;
+@use '../../Shared/styles/default/layout' as layout;
+@use '../../Shared/styles/default/header' as header;
+@use '../../Shared/styles/default/button' as button;
+
+.header {
+    position: fixed;
+
+    display: flex;
+    justify-content: center;
+
+    width: 100%;
+    height: header.$height-size;
+    transition: background-color transition-time.$transition-time ease;
+
+    z-index: 2;
+    
+    &__container {
+        position: absolute;
+
+        display: flex;
+        justify-content: space-evenly;
+
+        width: layout.$layout-default-width;
+        height: header.$height-size;
+
+        max-width: layout.$layout-max-width;
+        max-height: layout.$layout-max-height;
+
+        transition: background-color transition-time.$transition-time ease;
+    }
+
+    &__logo {
+        height: 100%;
+        width: 55px;
+        @include no-select.no-select;
+    }
+
+    &__nav {
+        display: inline-flex;
+        align-items: center;
+
+
+        width: 30%;
+        height: 100%;
+
+        &__link {
+            white-space: nowrap;
+            transition: color transition-time.$transition-time ease;
+
+            &:hover {
+                color: var(--color4);
+            }
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6%;
+
+            li {
+                margin: 0;
+                padding: 0;
+
+                width: fit-content;
+                height: fit-content;
+
+                font-size: text.$font-size5;
+                font-weight: 500;
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        width: 30%;
+        gap: 10%;
+
+        button {
+            all: unset;
+
+            cursor: pointer;
+        }
+
+        &__login {
+            @include button.button-style(var(--color3));
+
+            text-decoration: none;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+
+            width: 90px;
+            height: 30px;
+
+            span {    
+                border-radius: border-radius.$border-radius;
+                color: var(--color1);
+            }
+        }
+    }
+
+    &--scroll {
+        background-color: var(--color1);
+        border-bottom: 1px solid var(--color4);
+    }
+}

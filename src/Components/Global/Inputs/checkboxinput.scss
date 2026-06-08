@@ -1,0 +1,20 @@
+//# Uses //
+@use '../../../Shared/styles/default/border-radius' as border-radius;
+
+.checkboxinput {
+    &-label {
+        cursor: pointer;
+    }
+
+    &-input {
+        visibility: hidden;
+        margin: 0;
+        
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+    }
+}

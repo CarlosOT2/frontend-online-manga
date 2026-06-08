@@ -1,0 +1,15 @@
+//# Use
+@use '../../Shared/styles/default/layout' as layout;
+@use '../../Shared/styles/default/border-radius' as border-radius;
+@use '../../Shared/styles/default/header' as header;
+
+.home-popular {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: layout.$layout-max-height / 3.5;
+
+    background: linear-gradient(to bottom, var(--color1), var(--color3));
+}

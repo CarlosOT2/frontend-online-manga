@@ -1,0 +1,6 @@
+//.. Used to setup theme colors
+@mixin CustomProps($theme-map) {
+  @each $name, $color in $theme-map {
+    --#{$name}: #{$color};
+  }
+}

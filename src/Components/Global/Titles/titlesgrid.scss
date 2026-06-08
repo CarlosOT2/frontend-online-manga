@@ -1,0 +1,124 @@
+//# Use //
+@use '../../../Shared/styles/mixins/no-select' as no-select;
+@use '../../../Shared/styles/default/border-radius' as border-radius;
+@use '../../../Shared/styles/default/text' as text;
+@use '../../../Shared/styles/default/title-categories' as title-categories;
+
+.titlegrid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+
+    gap: 1.5%;
+
+    &__list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__item {
+        &-link {}
+
+        &-article {
+            display: flex;
+            justify-content: space-between;
+            padding: 3% 3%;
+        }
+
+        &-img {
+            border-radius: border-radius.$border-radius;
+            @include no-select.no-select;
+        }
+
+        &-info-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        &-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 5px;
+        }
+
+        &-contentRating {
+            @include title-categories.cat-contentRating;
+        }
+
+        &-demographic {
+            @include title-categories.cat-demographic;
+        }
+
+        &-genre {
+            @include title-categories.cat-genre;
+        }
+
+        &-theme {
+            @include title-categories.cat-theme;
+        }
+    }
+}
+
+.titlegrid--card {
+
+    .titlegrid__list {
+        gap: 15px;
+    }
+
+    .titlegrid__item-name {
+        margin: 0;
+    }
+
+    .titlegrid__item-img {
+        width: 27.5%;
+        height: 100%;
+    }
+
+    .titlegrid__item-info-container {
+        height: 100%;
+        width: 65%;
+        gap: 10px;
+    }
+
+    .titlegrid__item-article {
+        justify-content: flex-start;
+        gap: 2%;
+        padding: 2%;
+
+        background-color: var(--color1);
+        border-radius: border-radius.$border-radius;
+    }
+}
+
+.titlegrid--compact {
+    .titlegrid__list {
+        width: 100%;
+        height: 100%;
+
+        border-radius: border-radius.$border-radius;
+        background-color: var(--color1);
+    }
+
+    .titlegrid__item-img {
+        width: 30%;
+        height: 100%;
+    }
+
+    .titlegrid__item-name {
+        font-size: text.$font-size5;
+    }
+
+    .titlegrid__item-info-container {
+        height: 100%;
+        width: 65%;
+    }
+}

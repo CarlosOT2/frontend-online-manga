@@ -1,0 +1,24 @@
+$light-theme: (
+    //.. Background
+    background-color: rgb(245, 245, 245),
+    //.. Colors 
+    color1: rgb(255, 255, 255),
+    color2: rgb(170, 170, 170),
+    color3: rgb(7, 167, 241),
+    color4: rgb(138, 209, 241),
+    color5: rgb(0, 136, 199),
+
+    //.. Text
+    text-color: black,
+    //.. Icon
+    icon-color: rgb(0, 0, 0),
+
+    //.. Others
+    box-shadow: rgba(0, 0, 0, 0.75),
+
+    true: rgb(0, 175, 0),
+    true-transparent: rgba(0, 175, 0, 0.2),
+
+    false: rgb(220, 0, 0),
+    false-transparent: rgba(220, 0, 0, 0.2),
+    )
