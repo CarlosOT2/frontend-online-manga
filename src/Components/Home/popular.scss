@@ -9,7 +9,7 @@
     justify-content: center;
 
     width: 100%;
-    height: layout.$layout-max-height / 3.5;
+    height: calc(layout.$layout-max-height / 3.5);
 
     background: linear-gradient(to bottom, var(--color1), var(--color3));
 }
