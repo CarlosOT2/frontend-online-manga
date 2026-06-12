@@ -56,7 +56,7 @@ export default function FeaturedTitles({ data }: { data: title[] }) {
                             <li className='featuredtitles__slide' key={`slide-${i}`}>
                                 <Link to={`/title/${title.id}/${title.name}`}>
                                     <article className='featuredtitles__card'>
-                                        <Img className={'featuredtitles__card__img'} src={`public/manga-teste.jpg`} />
+                                        <Img className={'featuredtitles__card__img'} src={`/manga-teste.jpg`} />
                                         <section className='featuredtitles__card__section'>
                                             <Text not_exceed_X={true} className={`featuredtitles__card__name`} tag={'h3'}>
                                                 {title.name}

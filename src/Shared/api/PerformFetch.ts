@@ -14,18 +14,20 @@ const APIUrl = import.meta.env.VITE_API_URL;
  * @returns {Promise<any>} return res.json() as T
  * @throws {Error} 
  */
+console.log(`${APIUrl}`);
 export default async function PerformFetch<T>(config: config): Promise<T> {
+
     const {
         method = "GET",
         headers = {},
         body = null,
         url = ""
     } = config
-
+    console.log(`${APIUrl}${url}`);
     try {
         const res = await fetch(`${APIUrl}${url}`, { method, headers, body, })
-        if (!res.ok) { 
-            throw new Error(`${res.status} HTTP CODE; ${await res.text()}`) 
+        if (!res.ok) {
+            throw new Error(`${res.status} HTTP CODE; ${await res.text()}`)
         }
         return res.json() as T
     } catch (err) {
