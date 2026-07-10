@@ -11,6 +11,7 @@
 
     gap: 1.5%;
 
+
     &__list {
         margin: 0;
         padding: 0;
@@ -30,7 +31,6 @@
         }
 
         &-img {
-            border-radius: border-radius.$border-radius;
             @include no-select.no-select;
         }
 
@@ -109,8 +109,8 @@
     }
 
     .titlegrid__item-img {
-        width: 30%;
-        height: 100%;
+        width: 80px;
+        height: 120px;
     }
 
     .titlegrid__item-name {

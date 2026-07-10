@@ -163,9 +163,19 @@ export default function Title() {
                 Title: {data?.name}
             </Text >
             <div className='title__container'>
-                <Img className={'title__bg-img'} src={'/manga-teste.jpg'} ariaHidden={true} />
+                <Img
+                    className={'title__bg-img'}
+                    src={'/manga-teste.jpg'}
+                    ariaHidden={true}
+                    noPreview={true}
+                />
                 <header className='title__header'>
-                    <Img className={'title__img'} src={'/manga-teste.jpg'} alt={`Cover of ${data?.name}`} />
+                    <Img
+                        borderRadius={true}
+                        className={'title__img'}
+                        src={'/manga-teste.jpg'}
+                        alt={`Cover of ${data?.name}`}
+                    />
 
                     <section className={'title__header__content'}>
                         <section className='title__header__meta'>

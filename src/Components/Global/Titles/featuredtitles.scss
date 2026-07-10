@@ -81,7 +81,6 @@
         &__img {
             height: 100%;
             width: 20%;
-            border-radius: border-radius.$border-radius;
             @include no-select.no-select;
         }
 

@@ -97,10 +97,11 @@ export default function TitlesGrid({
                         <Img
                             className={'titlegrid__item-img'}
                             src={`/manga-teste.jpg`}
+                            borderRadius={true}
                             alt={`Cover of ${title.name}`}
                         />
                         {variant === 'compact' && (
-                            <TitleInfo title={title}/>
+                            <TitleInfo title={title} />
                         )}
                         {variant === 'card' && (
                             <TitleInfo title={title} config={{ contentRating: true, demographic: true, genres: true, themes: true, synopsis: true }} />
@@ -110,7 +111,7 @@ export default function TitlesGrid({
             </li>
         )
     }
-    
+
     return (
         <div
             className={`titlegrid titlegrid--${variant}`}
@@ -119,10 +120,10 @@ export default function TitlesGrid({
             }}
         >
             {
-                OrganizedData.map((subArray, s_index) => (
-                    <ul className={`titlegrid__list`} key={`titles-${s_index}`}>
+                Array.from({ length: columns }).map((_, column_i) => (
+                    <ul className="titlegrid__list" key={column_i}>
                         {
-                            subArray.map((title) => (
+                            OrganizedData[column_i]?.map((title) => (
                                 <TitleItem title={title} />
                             ))
                         }
