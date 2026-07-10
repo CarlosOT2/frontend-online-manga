@@ -20,7 +20,12 @@ export default function Header() {
     function Logo() {
         return (
             <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
-                <Img className={'header__logo'} src={'/manga-logo.png'} alt='logo' />
+                <Img
+                    className={'header__logo'}
+                    src={'/manga-logo.png'}
+                    alt='logo'
+                    noPreview={true}
+                />
             </Link>
         )
     }
