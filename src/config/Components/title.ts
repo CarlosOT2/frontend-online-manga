@@ -52,30 +52,36 @@ const metanames: titlemetanames = {
     status: {
         metaname: "Status",
         statickey: "statuses"
+    },
+    chapters: {
+        metaname: "Chapters"
+    },
+    alternativenames: {
+        metaname: "Alternative Names"
     }
 };
 
 /**
  * **Grid configuration for the TitleGrid component.**
  *
- * **Each key represents a variant of the grid.**
+ * Each key represents a grid variant.
  *
  * Properties:
- * - columns: Number of columns the grid will display.
- * - items: Number of items per column.
+ * - `columns`: Number of columns displayed by the grid.
+ * - `items`:
+ *   - **compact**: Maximum number of items per column.
+ *   - **card**: Maximum total number of items displayed across all columns.
+ *     For example, `items: 25` with `columns: 2` renders up to 25 cards
+ *     distributed between the two columns, **not** 25 cards in each column.
  */
 const grid: titlegrid = {
-    card: {
-        columns: 2,
-        items: 20
-    },
     compact: {
         columns: 4,
         items: 5
     },
-    hero: {
-        columns: 1,
-        items: 1
+    card: {
+        columns: 2,
+        items: 50
     }
 }
 

@@ -32,9 +32,9 @@ export default function TitlesGrid({
     a Imagem por enquanto vai ser que está em public, depois que eu configurar o servidor vou utilizar as imagens
     armazenadas em data, que seria 'title.img'
     */
-    const { items, columns } = grid[variant]
+    const { items, columns } = grid[variant];
     const OrganizedData = chunkArray<title>(data, items).slice(0, columns);
-
+    
     function TitleInfo({ title, config }: { title: title, config?: TitleInfoConfig }) {
         const { contentRating, demographic, synopsis, genres, themes } = config ?? {}
 
@@ -113,23 +113,40 @@ export default function TitlesGrid({
     }
 
     return (
-        <div
-            className={`titlegrid titlegrid--${variant}`}
-            style={{
-                gridTemplateColumns: `repeat(${columns}, 1fr)`,
-            }}
-        >
-            {
-                Array.from({ length: columns }).map((_, column_i) => (
+        variant === "compact"
+            ?
+            <div
+                className={`titlegrid titlegrid--${variant}`}
+                style={{
+                    gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                }}
+            >
+                {Array.from({ length: columns }).map((_, column_i) => (
                     <ul className="titlegrid__list" key={column_i}>
-                        {
-                            OrganizedData[column_i]?.map((title) => (
-                                <TitleItem title={title} />
-                            ))
-                        }
+                        {OrganizedData[column_i]?.map((title) => (
+                            <TitleItem
+                                key={title.id}
+                                title={title}
+                            />
+                        ))}
                     </ul>
-                ))
-            }
-        </div>
+                ))}
+            </div>
+
+            : variant === "card" ?
+                <ul
+                    className={`titlegrid titlegrid--${variant}`}
+                    style={{
+                        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                    }}
+                >
+                    {data.map((title) => (
+                        <TitleItem key={`item-${title.id}`} title={title} />
+                    ))}
+                </ul>
+                :
+                <>
+                    INVALID VARIANT
+                </>
     )
 }
