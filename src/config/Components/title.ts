@@ -52,12 +52,6 @@ const metanames: titlemetanames = {
     status: {
         metaname: "Status",
         statickey: "statuses"
-    },
-    chapters: {
-        metaname: "Chapters"
-    },
-    alternativenames: {
-        metaname: "Alternative Names"
     }
 };
 
