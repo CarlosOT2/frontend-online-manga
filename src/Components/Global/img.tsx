@@ -30,7 +30,7 @@ export default function Img({ src, className, alt, borderRadius, noPreview, aria
                 )}
 
                 <img
-                    className={FilterClasses(`img ${borderRadius ? 'img__borderRadius' : ''}`)}
+                    className={FilterClasses(`img ${noPreview && className} ${borderRadius ? 'img__borderRadius' : ''}`)}
                     src={src || undefined}
                     alt={alt || undefined}
                     aria-hidden={ariaHidden}
