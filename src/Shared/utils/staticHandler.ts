@@ -19,5 +19,6 @@ export function staticMapper(category: keyof typeof staticData, id: number) {
  * **Returns all keys from the object returned by `GetAllStatic()`**
  */
 export function getAllStaticKeys(): (keyof typeof staticData)[] {
+    
     return Object.keys(staticData) as (keyof typeof staticData)[]
 }

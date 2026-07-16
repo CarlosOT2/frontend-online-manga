@@ -9,4 +9,5 @@ export type staticDataArray = {
   demographics: staticData[]
   genres: staticData[]
   themes: staticData[]
+  languages: staticData[]
 }

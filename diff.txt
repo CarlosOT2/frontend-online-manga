@@ -1,0 +1,206 @@
+diff --git a/public/flags/uk.svg b/public/flags/uk.svg
+deleted file mode 100644
+index fdce0a5..0000000
+--- a/public/flags/uk.svg
++++ /dev/null
+@@ -1 +0,0 @@
+-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 512 512"><path d="M0 85.333h512V426.67H0z" style="fill:#fff"/><path d="M288 85.33h-64v138.666H0v64h224v138.666h64V287.996h224v-64H288z" style="fill:#d80027"/><path d="M393.785 315.358 512 381.034v-65.676zm-82.133 0L512 426.662v-31.474l-143.693-79.83zm146.982 111.304-146.982-81.664v81.664z" style="fill:#0052b4"/><path d="M311.652 315.358 512 426.662v-31.474l-143.693-79.83z" style="fill:#fff"/><path d="M311.652 315.358 512 426.662v-31.474l-143.693-79.83z" style="fill:#d80027"/><path d="M90.341 315.356 0 365.546v-50.19zm110.007 14.154v97.151H25.491z" style="fill:#0052b4"/><path d="M143.693 315.358 0 395.188v31.474l200.348-111.304z" style="fill:#d80027"/><path d="M118.215 196.634 0 130.958v65.676zm82.133 0L0 85.33v31.474l143.693 79.83zM53.366 85.33l146.982 81.664V85.33z" style="fill:#0052b4"/><path d="M200.348 196.634 0 85.33v31.474l143.693 79.83z" style="fill:#fff"/><path d="M200.348 196.634 0 85.33v31.474l143.693 79.83z" style="fill:#d80027"/><path d="M421.659 196.636 512 146.446v50.19zm-110.007-14.154V85.331h174.857z" style="fill:#0052b4"/><path d="M368.307 196.634 512 116.804V85.33L311.652 196.634z" style="fill:#d80027"/></svg>
+\ No newline at end of file
+diff --git a/src/Components/Title/title.tsx b/src/Components/Title/title.tsx
+index 1e0002d..55784c6 100644
+--- a/src/Components/Title/title.tsx
++++ b/src/Components/Title/title.tsx
+@@ -9,8 +9,9 @@ import { useParams } from 'react-router'
+ import { GetTitleById } from '../../Shared/api/FetchTitle'
+ //# Utils //
+ import { staticMapper } from '../../Shared/utils/staticHandler'
++import timeAgo from '../../Shared/utils/timeAgo'
+ //# Types //
+-import { chapter, title, titlemetakeys } from '../../Shared/types/Data/title'
++import { chapter, title, chapterTranslation, titlemetakeys } from '../../Shared/types/Data/title'
+ import { staticDataArray } from '../../Shared/types/Data/static'
+ //# Config //
+ import { metanames } from '../../config/Components/title'
+@@ -58,7 +59,7 @@ function SectionMeta({ data }: { data: title | undefined }) {
+         return
+     }
+ 
+-    type metadata = title[keyof title] | undefined
++    type metadata = title[titlemetakeys] | undefined
+     type groupconfig = {
+         name: string,
+         data: metadata,
+@@ -123,23 +124,27 @@ function SectionMeta({ data }: { data: title | undefined }) {
+             <ul className={'title__meta-list'}>
+                 <Groups config={config} />
+             </ul>
+-            <Text tag='h2' className='title__meta-label--alternative'>
+-                Alternative Names
+-            </Text>
+-            <ul className={'title__meta-list--alternative'}>
+-                {Array.from({ length: 10 }).map((_, index) => (
+-                    <li key={index}>
+-                        <Img
+-                            src="/flags/uk.svg"
+-                            className="title__meta-list--alternative__img"
+-                            noPreview={true}
+-                        />
+-                        <Text tag="span" className="title__meta-list--alternative__text">
+-                            Warrior Princess Survival Saga: The Unsanctioned Intergender Relations on a Deserted Island, Battling for the Fate of Another World
+-                        </Text>
+-                    </li>
+-                ))}
+-            </ul>
++            {data.alternativenames && data.alternativenames.length > 0 && (
++                <>
++                    <Text tag="h2" className="title__meta-label--alternative">
++                        Alternative Names
++                    </Text>
++                    <ul className="title__meta-list--alternative">
++                        {data.alternativenames.map((alt, index) => (
++                            <li key={index}>
++                                <Img
++                                    src={`/flags/${staticMapper('languages', alt.languageId)}.svg`}
++                                    className="title__meta-list--alternative__img"
++                                    noPreview={true}
++                                />
++                                <Text tag="span" className="title__meta-list--alternative__text">
++                                    {alt.name}
++                                </Text>
++                            </li>
++                        ))}
++                    </ul>
++                </>
++            )}
+         </div>
+ 
+     )
+@@ -160,35 +165,33 @@ function SectionChapters({ data }: { data: title | undefined }) {
+                         {open
+                             &&
+                             <ul className='title__chapters-list--translations'>
+-                                {Array.from({ length: 5 }).map((_, index) => (
++                                {chapter.translations.map((chapterTranslation: chapterTranslation, index) => (
+                                     <li
+                                         key={index}
+                                         className='title__chapters-list__item--translations'
+-                                        style={ index === 4 ? { borderBottom: "0", paddingBottom: "0" } : undefined }
++                                        style={index === 4 ? { borderBottom: "0", paddingBottom: "0" } : undefined}
+                                     >
+                                         <div className='title__chapters-list__item--translations__top'>
+                                             <Img
+-                                                src="/flags/uk.svg"
++                                                src={`/flags/${staticMapper('languages', chapterTranslation.languageId)}.svg`}
+                                                 className="title__chapters-list__item-img"
+                                                 noPreview={true}
+                                             />
+                                             <Text tag='span' className='title__chapters-list__item-title' not_exceed_X={true}>
+-                                                Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title
+-                                                Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title
++                                                {chapterTranslation.chapterTitle}
+                                             </Text>
+                                             <IoEyeOutline className='title__chapters-list__item-view-icon' />
+                                             <Text tag='span' className='title__chapters-list__item-view'>
+-                                                5200
++                                                {chapterTranslation.viewCount}
+                                             </Text>
+                                         </div>
+                                         <div className='title__chapters-list__item--translations__bottom'>
+                                             <MdOutlineGroup className='title__chapters-list__item-scan-icon' />
+                                             <Text tag='span' className='title__chapters-list__item-scan' not_exceed_X={true}>
+-                                                Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group
+-                                                Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group
++                                                {chapterTranslation.scanGroupName}
+                                             </Text>
+                                             <Text tag='span' className='title__chapters-list__item-upload'>
+-                                                50 years ago
++                                                {timeAgo(chapterTranslation.uploadedAt)}
+                                             </Text>
+                                         </div>
+                                     </li>
+@@ -202,7 +205,7 @@ function SectionChapters({ data }: { data: title | undefined }) {
+     }
+     return (
+         <ul className={'title__chapters-list'}>
+-            {data?.chapters.map((chapter) => (
++            {data?.chapters?.map((chapter) => (
+                 <Item chapter={chapter} />
+             ))}
+         </ul>
+@@ -222,6 +225,8 @@ export default function Title() {
+         if (res) setData(res[0])
+     }
+ 
++    console.log(data)
++
+     useEffect(() => {
+         req()
+     }, [])
+diff --git a/src/Shared/types/Data/static.ts b/src/Shared/types/Data/static.ts
+index 125c491..d5704c1 100644
+--- a/src/Shared/types/Data/static.ts
++++ b/src/Shared/types/Data/static.ts
+@@ -9,4 +9,5 @@ export type staticDataArray = {
+   demographics: staticData[]
+   genres: staticData[]
+   themes: staticData[]
++  languages: staticData[]
+ }
+diff --git a/src/Shared/types/Data/title.ts b/src/Shared/types/Data/title.ts
+index 325b958..069bd23 100644
+--- a/src/Shared/types/Data/title.ts
++++ b/src/Shared/types/Data/title.ts
+@@ -1,14 +1,25 @@
+-export type chapter = { id: number, number: number}
++export type chapterTranslation = {
++    id: number,
++    chapterTitle: string,
++    uploadedAt: string,
++    viewCount: number,
++    scanGroupName: string,
++    languageId: number
++}
++export type chapter = { 
++    id: number, 
++    number: number
++    translations: chapterTranslation[]
++}
+ export type chapters = chapter[]
+ 
+ export type alternativename = { name: string, languageId: number }
+-export type alternativenames = alternativename[]
+ 
+ export type title = {
+     id: number
+     name: string
+     synopsis: string
+-    releaseDate: string
++    publicationDate: string
+     img: string
+ 
+     authors: string[]
+@@ -21,8 +32,8 @@ export type title = {
+     demographic: string
+     status: string
+ 
+-    chapters: chapters
+-    alternativenames: alternativenames
++    chapters?: chapters
++    alternativenames?: alternativename[]
+ }
+ 
+-export type titlemetakeys = keyof Omit<title, "id" | "name" | "synopsis" | "releaseDate" | "img">
+\ No newline at end of file
++export type titlemetakeys = keyof Omit<title, "id" | "name" | "synopsis" | "publicationDate" | "img" | "chapters" | "alternativenames">
+\ No newline at end of file
+diff --git a/src/Shared/utils/staticHandler.ts b/src/Shared/utils/staticHandler.ts
+index 7ec951e..eec213a 100644
+--- a/src/Shared/utils/staticHandler.ts
++++ b/src/Shared/utils/staticHandler.ts
+@@ -19,5 +19,6 @@ export function staticMapper(category: keyof typeof staticData, id: number) {
+  * **Returns all keys from the object returned by `GetAllStatic()`**
+  */
+ export function getAllStaticKeys(): (keyof typeof staticData)[] {
++    
+     return Object.keys(staticData) as (keyof typeof staticData)[]
+ }

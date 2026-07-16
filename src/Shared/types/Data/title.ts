@@ -1,14 +1,25 @@
-export type chapter = { id: number, number: number}
+export type chapterTranslation = {
+    id: number,
+    chapterTitle: string,
+    uploadedAt: string,
+    viewCount: number,
+    scanGroupName: string,
+    languageId: number
+}
+export type chapter = { 
+    id: number, 
+    number: number
+    translations: chapterTranslation[]
+}
 export type chapters = chapter[]
 
 export type alternativename = { name: string, languageId: number }
-export type alternativenames = alternativename[]
 
 export type title = {
     id: number
     name: string
     synopsis: string
-    releaseDate: string
+    publicationDate: string
     img: string
 
     authors: string[]
@@ -21,8 +32,8 @@ export type title = {
     demographic: string
     status: string
 
-    chapters: chapters
-    alternativenames: alternativenames
+    chapters?: chapters
+    alternativenames?: alternativename[]
 }
 
-export type titlemetakeys = keyof Omit<title, "id" | "name" | "synopsis" | "releaseDate" | "img">
+export type titlemetakeys = keyof Omit<title, "id" | "name" | "synopsis" | "publicationDate" | "img" | "chapters" | "alternativenames">

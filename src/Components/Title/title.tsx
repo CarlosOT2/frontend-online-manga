@@ -9,8 +9,9 @@ import { useParams } from 'react-router'
 import { GetTitleById } from '../../Shared/api/FetchTitle'
 //# Utils //
 import { staticMapper } from '../../Shared/utils/staticHandler'
+import timeAgo from '../../Shared/utils/timeAgo'
 //# Types //
-import { chapter, title, titlemetakeys } from '../../Shared/types/Data/title'
+import { chapter, title, chapterTranslation, titlemetakeys } from '../../Shared/types/Data/title'
 import { staticDataArray } from '../../Shared/types/Data/static'
 //# Config //
 import { metanames } from '../../config/Components/title'
@@ -58,7 +59,7 @@ function SectionMeta({ data }: { data: title | undefined }) {
         return
     }
 
-    type metadata = title[keyof title] | undefined
+    type metadata = title[titlemetakeys] | undefined
     type groupconfig = {
         name: string,
         data: metadata,
@@ -123,23 +124,27 @@ function SectionMeta({ data }: { data: title | undefined }) {
             <ul className={'title__meta-list'}>
                 <Groups config={config} />
             </ul>
-            <Text tag='h2' className='title__meta-label--alternative'>
-                Alternative Names
-            </Text>
-            <ul className={'title__meta-list--alternative'}>
-                {Array.from({ length: 10 }).map((_, index) => (
-                    <li key={index}>
-                        <Img
-                            src="/flags/uk.svg"
-                            className="title__meta-list--alternative__img"
-                            noPreview={true}
-                        />
-                        <Text tag="span" className="title__meta-list--alternative__text">
-                            Warrior Princess Survival Saga: The Unsanctioned Intergender Relations on a Deserted Island, Battling for the Fate of Another World
-                        </Text>
-                    </li>
-                ))}
-            </ul>
+            {data.alternativenames && data.alternativenames.length > 0 && (
+                <>
+                    <Text tag="h2" className="title__meta-label--alternative">
+                        Alternative Names
+                    </Text>
+                    <ul className="title__meta-list--alternative">
+                        {data.alternativenames.map((alt, index) => (
+                            <li key={index}>
+                                <Img
+                                    src={`/flags/${staticMapper('languages', alt.languageId)}.svg`}
+                                    className="title__meta-list--alternative__img"
+                                    noPreview={true}
+                                />
+                                <Text tag="span" className="title__meta-list--alternative__text">
+                                    {alt.name}
+                                </Text>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
         </div>
 
     )
@@ -160,35 +165,33 @@ function SectionChapters({ data }: { data: title | undefined }) {
                         {open
                             &&
                             <ul className='title__chapters-list--translations'>
-                                {Array.from({ length: 5 }).map((_, index) => (
+                                {chapter.translations.map((chapterTranslation: chapterTranslation, index) => (
                                     <li
                                         key={index}
                                         className='title__chapters-list__item--translations'
-                                        style={ index === 4 ? { borderBottom: "0", paddingBottom: "0" } : undefined }
+                                        style={index === 4 ? { borderBottom: "0", paddingBottom: "0" } : undefined}
                                     >
                                         <div className='title__chapters-list__item--translations__top'>
                                             <Img
-                                                src="/flags/uk.svg"
+                                                src={`/flags/${staticMapper('languages', chapterTranslation.languageId)}.svg`}
                                                 className="title__chapters-list__item-img"
                                                 noPreview={true}
                                             />
                                             <Text tag='span' className='title__chapters-list__item-title' not_exceed_X={true}>
-                                                Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title
-                                                Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title Chapter Title
+                                                {chapterTranslation.chapterTitle}
                                             </Text>
                                             <IoEyeOutline className='title__chapters-list__item-view-icon' />
                                             <Text tag='span' className='title__chapters-list__item-view'>
-                                                5200
+                                                {chapterTranslation.viewCount}
                                             </Text>
                                         </div>
                                         <div className='title__chapters-list__item--translations__bottom'>
                                             <MdOutlineGroup className='title__chapters-list__item-scan-icon' />
                                             <Text tag='span' className='title__chapters-list__item-scan' not_exceed_X={true}>
-                                                Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group
-                                                Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group Scan Group
+                                                {chapterTranslation.scanGroupName}
                                             </Text>
                                             <Text tag='span' className='title__chapters-list__item-upload'>
-                                                50 years ago
+                                                {timeAgo(chapterTranslation.uploadedAt)}
                                             </Text>
                                         </div>
                                     </li>
@@ -202,7 +205,7 @@ function SectionChapters({ data }: { data: title | undefined }) {
     }
     return (
         <ul className={'title__chapters-list'}>
-            {data?.chapters.map((chapter) => (
+            {data?.chapters?.map((chapter) => (
                 <Item chapter={chapter} />
             ))}
         </ul>
@@ -221,6 +224,8 @@ export default function Title() {
         const res = await GetTitleById(Number(id))
         if (res) setData(res[0])
     }
+
+    console.log(data)
 
     useEffect(() => {
         req()
