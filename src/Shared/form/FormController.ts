@@ -35,7 +35,6 @@ export function useFormController(config: config) {
         const { name, value, type } = event.target
 
         if (type == 'checkbox') {
-            console.log('onChange')
             setData(prev => {
                 const current = (prev[name] as any[]) || [];
 

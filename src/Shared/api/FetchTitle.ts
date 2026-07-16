@@ -3,12 +3,20 @@ import PerformFetch from './PerformFetch'
 //# Types //
 import { title } from '../types/Data/title'
 
-export async function GetAllTitles(limit: number) {
-    return await PerformFetch<title[]>({ url: `/title?limit=${limit}` })
+export async function GetFeaturedTitles(limit: number = 10) {
+    return await PerformFetch<title[]>({ url: `/Title/featured?limit=${limit}` })
+}
+
+export async function GetLatestUpdatesTitles(limit: number = 20, compact: boolean = true) {
+    return await PerformFetch<title[]>({ url: `/Title/latestupdates?limit=${limit}&compact=${compact}` })
+}
+
+export async function GetRecentlyAddedTitles(limit: number = 20, compact: boolean = true) {
+    return await PerformFetch<title[]>({ url: `/Title/recentlyadded?limit=${limit}&compact=${compact}` })
 }
 
 export async function GetTitleById(id: number) {
-    return await PerformFetch<title[]>({ url: `/title?id=${id}` })
+    return await PerformFetch<title[]>({ url: `/Title?id=${id}` })
 }
 
 export async function GetTitlesByFilters(data: {
@@ -38,5 +46,5 @@ export async function GetTitlesByFilters(data: {
         }
     })
     const query = params.toString()
-    return await PerformFetch<title[]>({ url: `/title/search?${query}` })
+    return await PerformFetch<title[]>({ url: `/Title/search?${query}` })
 }

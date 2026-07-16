@@ -3,7 +3,7 @@ import TitleGrid from '../Global/Titles/titlesgrid'
 //# Libs //
 import { useState, useEffect } from 'react'
 //# Api //
-import { GetAllTitles } from '../../Shared/api/FetchTitle'
+import { GetRecentlyAddedTitles } from '../../Shared/api/FetchTitle'
 //# Types //
 import { title } from '../../Shared/types/Data/title'
 //# Classes //
@@ -13,7 +13,7 @@ export default function RecentlyAdded() {
     const [data, setData] = useState<title[]>([])
 
     async function req() {
-        setData(await GetAllTitles(50))
+        setData(await GetRecentlyAddedTitles(99, false))
     }
 
     useEffect(() => {
@@ -24,7 +24,9 @@ export default function RecentlyAdded() {
         <>
             <div className='recentlyadded'>
                 <section className='recentlyadded__result'>
-                    <TitleGrid data={data} variant={'card'} />
+                    {
+                        <TitleGrid data={data} variant={'card'} />
+                    }   
                 </section>
             </div>
         </>

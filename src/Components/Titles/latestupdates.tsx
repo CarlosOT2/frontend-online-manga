@@ -3,7 +3,7 @@ import TitleGrid from '../Global/Titles/titlesgrid'
 //# Libs //
 import { useState, useEffect } from 'react'
 //# Api //
-import { GetAllTitles } from '../../Shared/api/FetchTitle'
+import { GetLatestUpdatesTitles } from '../../Shared/api/FetchTitle'
 //# Types //
 import { title } from '../../Shared/types/Data/title'
 //# Classes //
@@ -13,7 +13,7 @@ export default function LatestUpdates() {
     const [data, setData] = useState<title[]>([])
     
     async function req() {
-        setData(await GetAllTitles(50))
+        setData(await GetLatestUpdatesTitles(99, false))
     }
 
     useEffect(() => {

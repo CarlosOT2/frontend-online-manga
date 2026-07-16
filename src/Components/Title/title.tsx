@@ -225,8 +225,6 @@ export default function Title() {
         if (res) setData(res[0])
     }
 
-    console.log(data)
-
     useEffect(() => {
         req()
     }, [])

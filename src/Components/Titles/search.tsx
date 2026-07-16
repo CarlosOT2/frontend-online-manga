@@ -10,7 +10,7 @@ import FilterClasses from '../../Shared/utils/FilterClasses'
 import isPlainObject from '../../Shared/utils/isPlainObject'
 import { staticMapper, getAllStaticKeys } from '../../Shared/utils/staticHandler'
 //# Api //
-import { GetTitlesByFilters } from '../../Shared/api/FetchTitle'
+import { GetTitlesByFilters, GetLatestUpdatesTitles } from '../../Shared/api/FetchTitle'
 //# Services //
 import { GetAllStatic } from '../../Shared/api/FetchStatic'
 //# Utils //
@@ -274,7 +274,6 @@ export default function Search() {
     const { InputsController, SubmitController } = useFormController({
         handleSubmit: handleSubmit
     })
-    const formRef = useRef<HTMLFormElement>(null);
 
     const [data, setData] = useState<title[]>([])
     const [staticData, setStaticData] = useState<staticDataArray>({})
@@ -316,15 +315,19 @@ export default function Search() {
         })
 
         if (res) setData(res)
-
     }
 
+    
     //.. Get static data from the database
-    //.. Makes an unfiltered request when reloading/opening the page
     useEffect(() => {
         GetAllStatic().then(setStaticData)
-        formRef.current?.requestSubmit();
     }, [])
+    
+    //.. Loads the initial list of titles when the page opens/reload
+    useEffect(() => {
+        GetLatestUpdatesTitles(99, false).then(setData)
+    }, [])
+
 
     //.. Resets the selected filter tab
     useEffect(() => {
@@ -334,7 +337,6 @@ export default function Search() {
     return (
         <div className='search'>
             <form
-                ref={formRef}
                 className='search__form'
                 onSubmit={SubmitController.onSubmit}
             >
