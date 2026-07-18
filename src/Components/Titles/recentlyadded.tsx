@@ -10,7 +10,7 @@ import { title } from '../../Shared/types/Data/title'
 import './recentlyadded.scss'
 
 export default function RecentlyAdded() {
-    const [data, setData] = useState<title[]>([])
+    const [data, setData] = useState<title[] | undefined>(undefined)
 
     async function req() {
         setData(await GetRecentlyAddedTitles(99, false))
