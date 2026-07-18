@@ -3,7 +3,7 @@ import { titlemetakeys } from '../../Shared/types/Data/title'
 import { staticDataArray } from '../../Shared/types/Data/static'
 
 type titlemetanames = Record<titlemetakeys, { metaname: string; statickey?: keyof staticDataArray }>
-type titlegrid = { [keyof: string]: { columns: number, items: number } }
+type titlegrid = { [keyof: string]: { columns: number, items?: number } }
 
 /**
  * Mapping of which title metadata fields will be displayed in the `title` route.
@@ -62,11 +62,7 @@ const metanames: titlemetanames = {
  *
  * Properties:
  * - `columns`: Number of columns displayed by the grid.
- * - `items`:
- *   - **compact**: Maximum number of items per column.
- *   - **card**: Maximum total number of items displayed across all columns.
- *     For example, `items: 25` with `columns: 2` renders up to 25 cards
- *     distributed between the two columns, **not** 25 cards in each column.
+ * - `items` (compact only): Maximum number of items displayed in each column.
  */
 const grid: titlegrid = {
     compact: {
@@ -75,7 +71,6 @@ const grid: titlegrid = {
     },
     card: {
         columns: 2,
-        items: 50
     }
 }
 

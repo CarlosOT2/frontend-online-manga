@@ -275,7 +275,7 @@ export default function Search() {
         handleSubmit: handleSubmit
     })
 
-    const [data, setData] = useState<title[]>([])
+    const [data, setData] = useState<title[]>()
     const [staticData, setStaticData] = useState<staticDataArray>({})
 
     const [showFilterItem, setShowFilterItem] = useState<string | null>(null)

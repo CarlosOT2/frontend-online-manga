@@ -1,0 +1,13 @@
+@use '../../Shared/styles/default/preview' as preview;
+@use '../../Shared/styles/default/border-radius' as border-radius;
+
+.previewline {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    margin-bottom: 1px;
+    border-radius: border-radius.$border-radius;
+    @include preview.preview-background();
+}

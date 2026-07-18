@@ -11,7 +11,7 @@ import { title } from '../../Shared/types/Data/title'
 import './popular.scss'
 
 export default function Popular() {
-    const [data, setData] = useState<title[]>([])
+    const [data, setData] = useState<title[] | undefined>(undefined)
 
 
     async function req() {

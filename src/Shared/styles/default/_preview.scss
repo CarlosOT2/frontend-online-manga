@@ -1,0 +1,18 @@
+@mixin preview-background() {
+    background: linear-gradient(90deg,
+            var(--color2) 25%,
+            color-mix(in srgb, var(--color2) 90%, black) 50%,
+            var(--color2) 75%);
+    background-size: 200% 100%;
+    animation: img-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes img-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}

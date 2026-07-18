@@ -20,8 +20,6 @@ import './title.scss'
 //# Icons //
 import { FaStar } from "react-icons/fa"
 import { IoBook } from "react-icons/io5"
-import { TbMessageReportFilled } from "react-icons/tb"
-import { LuUpload } from "react-icons/lu"
 import { MdOutlineGroup } from "react-icons/md";
 import { IoEyeOutline } from "react-icons/io5";
 
@@ -37,16 +35,6 @@ function Buttons() {
             <Button className='title__header-button' icon={<IoBook className='title__header-button-icon' />}>
                 <Text className='title__header-button-txt' tag='span' no_select={true}>
                     Read
-                </Text>
-            </Button>
-            <Button className='title__header-button' icon={<TbMessageReportFilled className='title__header-button-icon' />}>
-                <Text className='title__header-button-txt' tag='span' no_select={true}>
-                    Report
-                </Text>
-            </Button>
-            <Button className='title__header-button' icon={<LuUpload className='title__header-button-icon' />}>
-                <Text className='title__header-button-txt' tag='span' no_select={true}>
-                    Upload
                 </Text>
             </Button>
         </section>
