@@ -34,7 +34,6 @@ function TitleInfo({ title, variant, isLoading }: { title: title, variant: Varia
                         <>
                             <PreviewLine width="100%" height={24} />
                             <PreviewLine width="85%" height={18} />
-                            <PreviewLine width="85%" height={18} />
                             <PreviewLine width="100%" height={15} marginTop={"5px"}/>
                             <PreviewLine width="100%" height={15}/>
                             <PreviewLine width="100%" height={15}/>
