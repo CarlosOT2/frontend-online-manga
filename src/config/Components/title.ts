@@ -52,6 +52,9 @@ const metanames: titlemetanames = {
     status: {
         metaname: "Status",
         statickey: "statuses"
+    },
+    publicationDate: {
+        metaname: "Publication Date"
     }
 };
 
@@ -62,14 +65,23 @@ const metanames: titlemetanames = {
  *
  * Properties:
  * - `columns`: Number of columns displayed by the grid.
- * - `items` (compact only): Maximum number of items displayed in each column.
+ * - `items` (compact and latestupdatescompact only): Maximum number of items displayed in each column.
  */
 const grid: titlegrid = {
     compact: {
         columns: 4,
         items: 5
     },
+    latestupdatescompact: {
+        columns: 4,
+        items: 5
+    },
+
     card: {
+        columns: 2,
+    },
+    
+    latestupdates: {
         columns: 2,
     }
 }

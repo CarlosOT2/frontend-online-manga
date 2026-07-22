@@ -10,6 +10,7 @@ export function createTitle(): title {
         synopsis: 'Template',
         publicationDate: '2020-10-22 12:59:08.820831+00',
         img: 'Template',
+        createdAt: '2020-10-22 12:59:08.820831+00',
 
         authors: ["1"],
         artists: ["1"],
@@ -17,8 +18,8 @@ export function createTitle(): title {
         genres: ["1"],
         themes: ["1"],
 
-        contentRating: '1',
-        demographic: '1',
-        status: '1',
+        contentRating: "1",
+        demographic: "1",
+        status: "1",
     }
 }

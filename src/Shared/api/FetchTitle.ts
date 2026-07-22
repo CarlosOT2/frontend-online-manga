@@ -1,18 +1,23 @@
 //# Services //
 import PerformFetch from './PerformFetch'
 //# Types //
-import { title } from '../types/Data/title'
+import type { title, titlecompact } from '../types/Data/title'
+import type { latestupdate } from '../types/Data/latestupdates'
 
 export async function GetFeaturedTitles(limit: number = 10) {
     return await PerformFetch<title[]>({ url: `/Title/featured?limit=${limit}` })
 }
 
-export async function GetLatestUpdatesTitles(limit: number = 20, compact: boolean = true) {
-    return await PerformFetch<title[]>({ url: `/Title/latestupdates?limit=${limit}&compact=${compact}` })
+export async function GetLatestUpdatesTitles(limit: number = 20) {
+    return await PerformFetch<latestupdate[]>({ url: `/Title/latestupdates?limit=${limit}` })
 }
 
+export function GetRecentlyAddedTitles(limit?: number, compact?: true): Promise<titlecompact[]>;
+export function GetRecentlyAddedTitles(limit?: number, compact?: false): Promise<title[]>;
 export async function GetRecentlyAddedTitles(limit: number = 20, compact: boolean = true) {
-    return await PerformFetch<title[]>({ url: `/Title/recentlyadded?limit=${limit}&compact=${compact}` })
+    return await PerformFetch<title[] | titlecompact[]>({
+        url: `/Title/recentlyadded?limit=${limit}&compact=${compact}`
+    });
 }
 
 export async function GetTitleById(id: number) {

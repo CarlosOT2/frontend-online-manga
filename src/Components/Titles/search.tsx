@@ -5,12 +5,12 @@ import Button from '../Global/Inputs/button'
 import CheckBoxInput from '../Global/Inputs/checkboxinput'
 import TitleGrid from '../Global/Titles/titlesgrid'
 //# Libs //
-import { useState, useEffect, useId, useRef } from 'react'
+import { useState, useEffect, useId } from 'react'
 import FilterClasses from '../../Shared/utils/FilterClasses'
 import isPlainObject from '../../Shared/utils/isPlainObject'
 import { staticMapper, getAllStaticKeys } from '../../Shared/utils/staticHandler'
 //# Api //
-import { GetTitlesByFilters, GetLatestUpdatesTitles } from '../../Shared/api/FetchTitle'
+import { GetTitlesByFilters, GetRecentlyAddedTitles } from '../../Shared/api/FetchTitle'
 //# Services //
 import { GetAllStatic } from '../../Shared/api/FetchStatic'
 //# Utils //
@@ -194,7 +194,7 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                                                 `
                                                             }
                                                             name={`${InputName}_${key}`}
-                                                            onClick={(e) => {
+                                                            onClick={() => {
                                                                 const filterById = (list: string[], id: number) =>
                                                                     (list ?? []).filter((item) => Number(item) !== id)
 
@@ -325,7 +325,7 @@ export default function Search() {
     
     //.. Loads the initial list of titles when the page opens/reload
     useEffect(() => {
-        GetLatestUpdatesTitles(99, false).then(setData)
+        GetRecentlyAddedTitles(99, false).then(setData)
     }, [])
 
 

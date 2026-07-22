@@ -9,6 +9,8 @@ import { useParams } from 'react-router'
 import { GetTitleById } from '../../Shared/api/FetchTitle'
 //# Utils //
 import { staticMapper } from '../../Shared/utils/staticHandler'
+import formatDate from '../../Shared/utils/formatDate'
+import isDate from '../../Shared/utils/isDate'
 import timeAgo from '../../Shared/utils/timeAgo'
 //# Types //
 import { chapter, title, chapterTranslation, titlemetakeys } from '../../Shared/types/Data/title'
@@ -82,7 +84,11 @@ function SectionMeta({ data }: { data: title | undefined }) {
                 if (obj.statickey) {
                     return staticMapper(obj.statickey, Number(item))
                 }
-                return item
+                else if (isDate(item)) {
+                    return formatDate(item)
+                } else {
+                    return item
+                }
             })
 
             return (
@@ -98,7 +104,6 @@ function SectionMeta({ data }: { data: title | undefined }) {
                                         {data}
                                     </Text>
                                 </li>
-
                             ))
                         }
                     </ul>
@@ -194,7 +199,7 @@ function SectionChapters({ data }: { data: title | undefined }) {
     return (
         <ul className={'title__chapters-list'}>
             {data?.chapters?.map((chapter) => (
-                <Item chapter={chapter} />
+                <Item chapter={chapter} key={chapter.id} />
             ))}
         </ul>
     )

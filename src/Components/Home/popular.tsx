@@ -1,6 +1,5 @@
 //# Components //
 import FeaturedTitles from '../Global/Titles/featuredtitles'
-import Text from '../Global/text'
 //# Libs //
 import { useState, useEffect } from 'react'
 //# Api //

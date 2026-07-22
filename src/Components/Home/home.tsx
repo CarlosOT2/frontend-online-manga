@@ -1,6 +1,7 @@
 //# Components //
 import Popular from './popular'
-import Updates from './updates'
+import LatestUpdates from './latestupdates'
+import RecentlAdded from './recentlyadded'
 import Text from '../Global/text'
 //# Classes //
 import './home.scss'
@@ -14,7 +15,8 @@ export default function Home() {
                 CatManga — Read Manga Online
             </Text >
             <Popular />
-            <Updates />
+            <RecentlAdded />
+            <LatestUpdates />
         </>
     )
 }
