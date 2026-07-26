@@ -81,9 +81,9 @@ export default function FeaturedTitles({ data }: FeaturedTitlesProps) {
                             <Link to={`/title/${title.id}/${title.name}`}>
                                 <article className="featuredtitles__card">
                                     <Img
-                                        borderRadius
+                                        borderRadius={true}
                                         className="featuredtitles__card__img"
-                                        src="/manga-teste.jpg"
+                                        src={title.img}
                                     />
 
                                     <section className="featuredtitles__card__section">
@@ -175,9 +175,9 @@ export default function FeaturedTitles({ data }: FeaturedTitlesProps) {
                         <Link to="/">
                             <article className="featuredtitles__card">
                                 <Img
-                                    borderRadius
+                                    borderRadius={true}
                                     className="featuredtitles__card__img"
-                                    src="/manga-teste.jpg"
+                                    onlyPreview={true}
                                 />
 
                                 <section className="featuredtitles__card__section">

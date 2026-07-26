@@ -23,11 +23,11 @@ $text-shadow: 0px 0px 10px var(--text-color);
         top: -10px;
         left: -10px;
 
-        width: calc(100vw + 10px);
-        height: calc(101vh + 10px);
+        width: calc(100vw + 50px);
+        height: calc(101vh + 50px);
 
         object-fit: cover;
-        filter: brightness(70%) blur(0.5vw);
+        filter: brightness(80%) blur(0.5vw);
         z-index: -1;
 
         @include no-select.no-select;

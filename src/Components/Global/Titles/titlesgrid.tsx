@@ -140,15 +140,14 @@ function TitleInfo({ title, variant, isLoading }: TitleInfoProps) {
                         </>
     )
 }
-function TitleArticle({ to, alt, children }: { to: string; alt: string; children: React.ReactNode }) {
+function TitleArticle({ to, alt, children, src }: { to: string; alt: string; children: React.ReactNode, src: string }) {
     return (
         <Link to={to} className='titlegrid__item__link'>
             <article className='titlegrid__item-article'>
                 <Img
                     className={'titlegrid__item-img'}
-                    src={`/manga-teste.jpg`}
+                    src={src}
                     borderRadius={true}
-                    noPreview={true}
                     alt={alt}
                 />
                 {children}
@@ -159,7 +158,7 @@ function TitleArticle({ to, alt, children }: { to: string; alt: string; children
 function TitleItemLatest({ title, variant, isLoading }: TitleItemLatestProps | TitleItemLatestCompactProps) {
     return (
         <li key={title.chapterTranslationId}>
-            <TitleArticle to={`/`} alt={`Cover of ${title.titleName}`}>
+            <TitleArticle to={`/`} alt={`Cover of ${title.titleName}`} src={title.titleImg}>
                 <TitleInfo title={title} variant={variant} isLoading={isLoading} />
             </TitleArticle>
         </li>
@@ -171,7 +170,7 @@ function TitleItem({ title, variant, isLoading }:
 ) {
     return (
         <li key={title.id}>
-            <TitleArticle to={`/title/${title.id}/${title.name}`} alt={`Cover of ${title.name}`}>
+            <TitleArticle to={`/title/${title.id}/${title.name}`} alt={`Cover of ${title.name}`} src={title.img}>
                 {
                     variant === 'card'
                         ? <TitleInfo title={title} variant={variant} isLoading={isLoading} />

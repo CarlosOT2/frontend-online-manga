@@ -222,7 +222,7 @@ export default function Title() {
         req()
     }, [])
 
-
+    console.log(data?.synopsis)
 
     return (
         <>
@@ -232,7 +232,8 @@ export default function Title() {
             <div className='title__container'>
                 <Img
                     className={'title__bg-img'}
-                    src={'/manga-teste.jpg'}
+                    src={data?.img}
+                    applyClassNameToImg={true}
                     ariaHidden={true}
                     noPreview={true}
                 />
@@ -240,7 +241,7 @@ export default function Title() {
                     <Img
                         borderRadius={true}
                         className={'title__header-img'}
-                        src={'/manga-teste.jpg'}
+                        src={data?.img}
                         alt={`Cover of ${data?.name}`}
                     />
 
@@ -258,7 +259,7 @@ export default function Title() {
                 </header>
                 <article className={'title__content'}>
                     <section className={'title__content__synopsis'}>
-                        <Text split_paragraph={'.'} tag='p'>
+                        <Text split_paragraph={"\n\n"} tag='p'>
                             {data?.synopsis}
                         </Text>
                     </section>
