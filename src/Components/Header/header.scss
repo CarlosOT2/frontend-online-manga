@@ -17,13 +17,16 @@
     height: header.$height-size;
     transition: background-color transition-time.$transition-time ease;
 
+    background-color: var(--color1);
+    border-bottom: 1px solid var(--color4);
+
     z-index: 2;
-    
+
     &__container {
         position: absolute;
 
         display: flex;
-        justify-content: space-evenly;
+        justify-content: space-between;
 
         width: layout.$layout-default-width;
         height: header.$height-size;
@@ -45,7 +48,7 @@
         align-items: center;
 
 
-        width: 30%;
+        width: 50%;
         height: 100%;
 
         &__link {
@@ -64,8 +67,8 @@
 
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 6%;
+
 
             li {
                 margin: 0;
@@ -85,36 +88,39 @@
         justify-content: flex-end;
         align-items: center;
 
-        width: 30%;
-        gap: 10%;
-
-        button {
-            all: unset;
-
-            cursor: pointer;
-        }
+        width: 50%;
+        gap: 25px;
 
         &__login {
-            @include button.button-style(var(--color3));
-
-            text-decoration: none;
+            border-radius: 10rem;
 
             display: flex;
             align-items: center;
             justify-content: space-evenly;
 
-            width: 90px;
-            height: 30px;
+            svg {
+                width: 30px;
+                height: 30px;
+            }
+        }
 
-            span {    
-                border-radius: border-radius.$border-radius;
-                color: var(--color1);
+        &__fast-search {
+            &-input {
+                width: 45%;
+                height: 35%;
+                font-size: text.$font-size5;
+            }
+
+            &-icon {
+                width: 25%;
+                height: 50%;
+
             }
         }
     }
 
-    &--scroll {
-        background-color: var(--color1);
-        border-bottom: 1px solid var(--color4);
+    &--home {
+        background: none;
+        border-bottom: none;
     }
 }

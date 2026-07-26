@@ -1,67 +1,91 @@
 //# Utils //
 import FilterClasses from '../../../Shared/utils/FilterClasses';
 //# Libs //
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import type { IconType } from 'react-icons';
 //# Types //
-import type { InputsController } from '../../../Shared/types/FormController'
-import { IconType } from 'react-icons';
+import type { InputsController } from '../../../Shared/types/FormController';
 //# Classes //
-import './input.scss'
+import './input.scss';
 
-type input = {
+type InputProps = {
     /** type of the input */
-    type: string
+    type: string;
     /** name of the input, used in 'data' from 'FormController' Hook */
-    name: string
+    name: string;
     /** additional CSS classes to apply */
-    className?: string
+    className?: string;
     /** aria-label of the input */
-    ariaLabel?: string
-    /** autoComplete of the input */
-    autoComplete?: "on" | "off"
-    /** add a icon to input */
-    Icon?: IconType
-    /** controller object containing InputsController from 'FormController' Hook */
-    InputsController: InputsController
+    ariaLabel?: string;
+    /** placeholder of the input */
+    placeHolder?: string;
+    /** fires additionally on input change */
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    /** autocomplete of the input */
+    autoComplete?: 'on' | 'off';
+    /** add an icon to the input */
+    Icon?: IconType;
+    /** add a className to the icon */
+    iconClassName?: string;
+    /** place the input icon on the left instead of the right */
+    reverseIcon?: boolean;
+    /** controller object containing InputsController from FormController Hook */
+    InputsController: InputsController;
+};
+
+type DefaultInputProps = Omit<InputProps, 'Icon' | 'iconClassName' | 'reverseIcon'> & { inputRef: React.RefObject<HTMLInputElement | null>}
+
+function DefaultInput({
+    type,
+    inputRef,
+    name,
+    className = '',
+    ariaLabel,
+    autoComplete = 'on',
+    InputsController,
+    placeHolder,
+    onChange,
+}: DefaultInputProps) {
+    return (
+        <input
+            ref={inputRef}
+            type={type}
+            name={name}
+            value={InputsController.data[name] ?? ''}
+            placeholder={placeHolder}
+            className={FilterClasses(`input ${className}`)}
+            aria-label={ariaLabel || undefined}
+            autoComplete={autoComplete}
+            onChange={(event) => {
+                InputsController.onChange(event);
+                onChange?.(event);
+            }}
+        />
+    );
 }
 
+export default function Input({
+    Icon,
+    reverseIcon,
+    iconClassName,
+    ...inputProps
+}: InputProps) {
+    const inputRef = useRef<HTMLInputElement>(null);
 
-export default function Input({ type, name, className = '', ariaLabel, autoComplete = "on", Icon, InputsController }: input) {
-
-    //.. Used to prevent input from losing focus when the user types
-    const ref = useRef<HTMLInputElement>(null)
     useEffect(() => {
-        ref.current?.focus();
-    }, [InputsController.data[name]]);
+        inputRef.current?.focus();
+    }, [inputProps.InputsController.data[inputProps.name]]);
 
-    function DefaultInput() {
-        return (
-            <input
-                ref={ref}
-                type={type}
-                name={name}
-                value={InputsController.data[name]}
-                className={FilterClasses(`
-                    input
-                    ${className}
-                `)}
-                aria-label={ariaLabel || undefined}
-                onChange={InputsController.onChange}
-                autoComplete={autoComplete}
-            />
-        )
-    }
+    const input = <DefaultInput {...inputProps} inputRef={inputRef}/>
+   
+    if (!Icon) return input
+    
+    const icon = <Icon className={`input-icon-container-icon ${iconClassName ?? ''}`}/>
+  
 
     return (
-        <>
-            {Icon ?
-                <div className={`input-icon-container ${className}`}>
-                    <Icon />
-                    <DefaultInput />
-                </div>
-                :
-                <DefaultInput />
-            }
-        </>
-    )
+        <div className={`input-icon-container ${inputProps.className ?? ''}`}>
+            {reverseIcon ? <>{input}{icon}</> : <> {icon}{input}</>}
+        </div>
+    );
 }

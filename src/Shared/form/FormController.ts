@@ -1,10 +1,11 @@
 //# Types //
 import type { InputsController, SubmitController } from '../types/FormController'
 //# Libs //
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type config = {
-    handleSubmit: (...args: any[]) => Promise<any>;
+    handleSubmit: (...args: any[]) => Promise<any>
+    submitOnChange?: boolean
 }
 
 /**
@@ -21,7 +22,7 @@ type config = {
  * 
  */
 export function useFormController(config: config) {
-    const { handleSubmit } = config
+    const { handleSubmit, submitOnChange } = config
 
     const [data, setData] = useState<{ [key: string]: any }>({})
 
@@ -31,6 +32,7 @@ export function useFormController(config: config) {
         data: data,
     }
 
+    //.. Updates the form data when an input changes; toggles values in an array for checkboxes, replaces the value for other input types
     function onChange(event: React.ChangeEvent<HTMLInputElement>) {
         const { name, value, type } = event.target
 
@@ -51,6 +53,7 @@ export function useFormController(config: config) {
         }
     }
 
+    //.. Manually sets the value of a field by name, without needing an input change event
     function changeValue(name: string, value: any) {
         setData(prev => ({ ...prev, [name]: value }))
     }
@@ -59,11 +62,23 @@ export function useFormController(config: config) {
     const SubmitController: SubmitController = {
         onSubmit: onSubmit,
     }
+
+    //.. Handles the form submit using the handleSubmit function provided to the hook
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
         await handleSubmit(InputsController.data)
     }
+
+    //.. Automatically calls handleSubmit ~1s after the user stops changing inputs
+    useEffect(() => {
+        if (!submitOnChange) return
+        //.. Debounces the automatic submit by 1s so it only fires after the user stops typing
+        const timeout = setTimeout(() => {
+            handleSubmit(data)
+        }, 1000)
+        return () => clearTimeout(timeout)
+    }, [data])
 
     return { InputsController, SubmitController }
 }

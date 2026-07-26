@@ -1,38 +1,60 @@
 //# Components //
 import Link from '../Global/link'
-import Text from '../Global/text'
-import Button from '../Global/Inputs/button'
+import Input from '../Global/Inputs/input'
 import Img from '../Global/img'
+import TitlesGrid from '../Global/Titles/titlesgrid'
 //# Libs //
+import { useLocation } from 'react-router'
 import { useWindowScroll } from 'react-use'
+import { useFormController } from '../../Shared/form/FormController'
+import { useState } from 'react'
 //# Classes //
 import './header.scss'
 //# Icons //
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import { IoPersonSharp } from "react-icons/io5";
+import { GetTitlesByFastFilters } from '../../Shared/api/FetchTitle'
+import { fasttitle } from '../../Shared/types/Data/title'
 
-
+//.. LocalComponents //
+function Logo() {
+    return (
+        <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
+            <Img
+                className={'header__logo'}
+                src={'/manga-logo.png'}
+                alt='logo'
+                noPreview={true}
+            />
+        </Link>
+    )
+}
 
 export default function Header() {
-    //.. Variables //
     const { y } = useWindowScroll()
+    const location = useLocation()
+    const { InputsController } = useFormController({
+        handleSubmit: handleSubmit,
+        submitOnChange: true
+    })
 
-    //.. Components //
-    function Logo() {
-        return (
-            <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
-                <Img
-                    className={'header__logo'}
-                    src={'/manga-logo.png'}
-                    alt='logo'
-                    noPreview={true}
-                />
-            </Link>
-        )
+    const [data, setData] = useState<fasttitle[] | undefined>(undefined)
+
+    async function handleSubmit(data: {
+        name: string
+    }) {
+        if (!data.name?.trim()) return
+
+        const res = await GetTitlesByFastFilters(data.name)
+        if (res) setData(res)
     }
+
+
+    console.log(data)
 
     return (
         <>
-            <header className={`header ${y > 0 ? 'header--scroll' : ''}`}>
+            <header className={`header ${location.pathname === "/" && y === 0 ? 'header--home' : ''}`}>
                 <div className={`header__container`}>
                     <nav className={`header__nav`}>
                         <ul>
@@ -57,14 +79,27 @@ export default function Header() {
                         </ul>
                     </nav>
                     <section className='header__actions'>
+                        <Input
+                            type='text'
+                            className='header__actions__fast-search-input'
+
+                            name='name'
+                            InputsController={InputsController}
+
+                            placeHolder='Search'
+                            autoComplete='off'
+                            Icon={FaMagnifyingGlass}
+                            iconClassName={'header__actions__fast-search-icon'}
+                            reverseIcon={true}
+                        />
+                        {
+                            data &&
+                            <>
+                            </>
+                        }
                         <Link className='header__actions__login' >
-                            <Text tag='span' no_select={true}>
-                                Login In
-                            </Text>
+                            <IoPersonSharp />
                         </Link>
-                        <Button defaultStyle={false} ariaLabel={'search titles'}>
-                            <FaMagnifyingGlass />
-                        </Button>
                     </section>
                 </div>
             </header>

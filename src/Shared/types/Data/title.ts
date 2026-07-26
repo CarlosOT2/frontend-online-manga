@@ -6,8 +6,8 @@ export type chapterTranslation = {
     scanGroupName: string,
     languageId: number
 }
-export type chapter = { 
-    id: number, 
+export type chapter = {
+    id: number,
     number: number
     translations: chapterTranslation[]
 }
@@ -19,7 +19,7 @@ type titlebase = {
     synopsis: string
     publicationDate: string
     img: string
-    
+
     createdAt: string
 
     status: string
@@ -27,6 +27,12 @@ type titlebase = {
     demographic: string
 }
 
+export type fasttitle = {
+    id: number
+    name: string
+    img: string
+    alternativenames?: alternativename[]
+}
 export type titlecompact = titlebase
 
 export type title = titlebase & {

@@ -1,7 +1,7 @@
 //# Services //
 import PerformFetch from './PerformFetch'
 //# Types //
-import type { title, titlecompact } from '../types/Data/title'
+import type { title, titlecompact, fasttitle } from '../types/Data/title'
 import type { latestupdate } from '../types/Data/latestupdates'
 
 export async function GetFeaturedTitles(limit: number = 10) {
@@ -24,6 +24,11 @@ export async function GetTitleById(id: number) {
     return await PerformFetch<title[]>({ url: `/Title?id=${id}` })
 }
 
+export async function GetTitlesByFastFilters(name: string) {
+    return await PerformFetch<fasttitle[]>({
+        url: `/Title/search/fast?name=${name}`
+    });
+}
 export async function GetTitlesByFilters(data: {
     name?: string,
     author?: string,
