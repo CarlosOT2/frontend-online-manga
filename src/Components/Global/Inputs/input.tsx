@@ -1,7 +1,7 @@
 //# Utils //
 import FilterClasses from '../../../Shared/utils/FilterClasses';
 //# Libs //
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import type { IconType } from 'react-icons';
 //# Types //
 import type { InputsController } from '../../../Shared/types/FormController';
@@ -15,12 +15,20 @@ type InputProps = {
     name: string;
     /** additional CSS classes to apply */
     className?: string;
+    /** CSS classes for the input's wrapper `<div>` */
+    divClassName?: string;
     /** aria-label of the input */
     ariaLabel?: string;
+    /** style of the input */
+    style?: React.CSSProperties;
     /** placeholder of the input */
     placeHolder?: string;
     /** fires additionally on input change */
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    /** onBlur event of the input */
+    onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+    /** onFocus event of the input */
+    onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void; 
     /** autocomplete of the input */
     autoComplete?: 'on' | 'off';
     /** add an icon to the input */
@@ -44,6 +52,9 @@ function DefaultInput({
     autoComplete = 'on',
     InputsController,
     placeHolder,
+    onFocus,
+    style,
+    onBlur,
     onChange,
 }: DefaultInputProps) {
     return (
@@ -55,6 +66,9 @@ function DefaultInput({
             placeholder={placeHolder}
             className={FilterClasses(`input ${className}`)}
             aria-label={ariaLabel || undefined}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            style={style}
             autoComplete={autoComplete}
             onChange={(event) => {
                 InputsController.onChange(event);
@@ -68,13 +82,10 @@ export default function Input({
     Icon,
     reverseIcon,
     iconClassName,
+    divClassName,
     ...inputProps
 }: InputProps) {
     const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        inputRef.current?.focus();
-    }, [inputProps.InputsController.data[inputProps.name]]);
 
     const input = <DefaultInput {...inputProps} inputRef={inputRef}/>
    
@@ -84,7 +95,7 @@ export default function Input({
   
 
     return (
-        <div className={`input-icon-container ${inputProps.className ?? ''}`}>
+        <div className={`input-icon-container ${divClassName} ${inputProps.className ?? ''}`}>
             {reverseIcon ? <>{input}{icon}</> : <> {icon}{input}</>}
         </div>
     );

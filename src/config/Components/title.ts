@@ -80,10 +80,13 @@ const grid: titlegrid = {
     card: {
         columns: 2,
     },
-    
     latestupdates: {
         columns: 2,
-    }
+    },
+    fasttitles: {
+        columns: 1,
+    },
+
 }
 
 export { metanames, grid };

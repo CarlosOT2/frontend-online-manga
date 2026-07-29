@@ -220,9 +220,7 @@ export default function Title() {
 
     useEffect(() => {
         req()
-    }, [])
-
-    console.log(data?.synopsis)
+    }, [id])
 
     return (
         <>

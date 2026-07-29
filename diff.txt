@@ -1,511 +1,1087 @@
-diff --git a/src/Components/Global/Inputs/input.scss b/src/Components/Global/Inputs/input.scss
-index c31c09d..ae949fd 100644
---- a/src/Components/Global/Inputs/input.scss
-+++ b/src/Components/Global/Inputs/input.scss
-@@ -14,9 +14,10 @@
-         display: flex;
-         align-items: center;
- 
--        svg {
-+        &-icon {
-             width: 7%;
-         }
-+        
- 
-         input {
-             border: none;
+diff --git a/diff.txt b/diff.txt
+index d0aa757..e69de29 100644
+--- a/diff.txt
++++ b/diff.txt
+@@ -1,511 +0,0 @@
+-diff --git a/src/Components/Global/Inputs/input.scss b/src/Components/Global/Inputs/input.scss
+-index c31c09d..ae949fd 100644
+---- a/src/Components/Global/Inputs/input.scss
+-+++ b/src/Components/Global/Inputs/input.scss
+-@@ -14,9 +14,10 @@
+-         display: flex;
+-         align-items: center;
+- 
+--        svg {
+-+        &-icon {
+-             width: 7%;
+-         }
+-+        
+- 
+-         input {
+-             border: none;
+-diff --git a/src/Components/Global/Inputs/input.tsx b/src/Components/Global/Inputs/input.tsx
+-index 7f909bb..98ef3f1 100644
+---- a/src/Components/Global/Inputs/input.tsx
+-+++ b/src/Components/Global/Inputs/input.tsx
+-@@ -1,67 +1,91 @@
+- //# Utils //
+- import FilterClasses from '../../../Shared/utils/FilterClasses';
+- //# Libs //
+--import { useRef, useEffect } from 'react';
+-+import { useEffect, useRef } from 'react';
+-+import type { IconType } from 'react-icons';
+- //# Types //
+--import type { InputsController } from '../../../Shared/types/FormController'
+--import { IconType } from 'react-icons';
+-+import type { InputsController } from '../../../Shared/types/FormController';
+- //# Classes //
+--import './input.scss'
+-+import './input.scss';
+- 
+--type input = {
+-+type InputProps = {
+-     /** type of the input */
+--    type: string
+-+    type: string;
+-     /** name of the input, used in 'data' from 'FormController' Hook */
+--    name: string
+-+    name: string;
+-     /** additional CSS classes to apply */
+--    className?: string
+-+    className?: string;
+-     /** aria-label of the input */
+--    ariaLabel?: string
+--    /** autoComplete of the input */
+--    autoComplete?: "on" | "off"
+--    /** add a icon to input */
+--    Icon?: IconType
+--    /** controller object containing InputsController from 'FormController' Hook */
+--    InputsController: InputsController
+--}
+-+    ariaLabel?: string;
+-+    /** placeholder of the input */
+-+    placeHolder?: string;
+-+    /** fires additionally on input change */
+-+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+-+    /** autocomplete of the input */
+-+    autoComplete?: 'on' | 'off';
+-+    /** add an icon to the input */
+-+    Icon?: IconType;
+-+    /** add a className to the icon */
+-+    iconClassName?: string;
+-+    /** place the input icon on the left instead of the right */
+-+    reverseIcon?: boolean;
+-+    /** controller object containing InputsController from FormController Hook */
+-+    InputsController: InputsController;
+-+};
+-+
+-+type DefaultInputProps = Omit<InputProps, 'Icon' | 'iconClassName' | 'reverseIcon'> & { inputRef: React.RefObject<HTMLInputElement | null>}
+- 
+-+function DefaultInput({
+-+    type,
+-+    inputRef,
+-+    name,
+-+    className = '',
+-+    ariaLabel,
+-+    autoComplete = 'on',
+-+    InputsController,
+-+    placeHolder,
+-+    onChange,
+-+}: DefaultInputProps) {
+-+    return (
+-+        <input
+-+            ref={inputRef}
+-+            type={type}
+-+            name={name}
+-+            value={InputsController.data[name] ?? ''}
+-+            placeholder={placeHolder}
+-+            className={FilterClasses(`input ${className}`)}
+-+            aria-label={ariaLabel || undefined}
+-+            autoComplete={autoComplete}
+-+            onChange={(event) => {
+-+                InputsController.onChange(event);
+-+                onChange?.(event);
+-+            }}
+-+        />
+-+    );
+-+}
+- 
+--export default function Input({ type, name, className = '', ariaLabel, autoComplete = "on", Icon, InputsController }: input) {
+-+export default function Input({
+-+    Icon,
+-+    reverseIcon,
+-+    iconClassName,
+-+    ...inputProps
+-+}: InputProps) {
+-+    const inputRef = useRef<HTMLInputElement>(null);
+- 
+--    //.. Used to prevent input from losing focus when the user types
+--    const ref = useRef<HTMLInputElement>(null)
+-     useEffect(() => {
+--        ref.current?.focus();
+--    }, [InputsController.data[name]]);
+-+        inputRef.current?.focus();
+-+    }, [inputProps.InputsController.data[inputProps.name]]);
+- 
+--    function DefaultInput() {
+--        return (
+--            <input
+--                ref={ref}
+--                type={type}
+--                name={name}
+--                value={InputsController.data[name]}
+--                className={FilterClasses(`
+--                    input
+--                    ${className}
+--                `)}
+--                aria-label={ariaLabel || undefined}
+--                onChange={InputsController.onChange}
+--                autoComplete={autoComplete}
+--            />
+--        )
+--    }
+-+    const input = <DefaultInput {...inputProps} inputRef={inputRef}/>
+-+   
+-+    if (!Icon) return input
+-+    
+-+    const icon = <Icon className={`input-icon-container-icon ${iconClassName ?? ''}`}/>
+-+  
+- 
+-     return (
+--        <>
+--            {Icon ?
+--                <div className={`input-icon-container ${className}`}>
+--                    <Icon />
+--                    <DefaultInput />
+--                </div>
+--                :
+--                <DefaultInput />
+--            }
+--        </>
+--    )
+-+        <div className={`input-icon-container ${inputProps.className ?? ''}`}>
+-+            {reverseIcon ? <>{input}{icon}</> : <> {icon}{input}</>}
+-+        </div>
+-+    );
+- }
+-\ No newline at end of file
+-diff --git a/src/Components/Header/header.scss b/src/Components/Header/header.scss
+-index d2648ef..269260e 100644
+---- a/src/Components/Header/header.scss
+-+++ b/src/Components/Header/header.scss
+-@@ -17,13 +17,16 @@
+-     height: header.$height-size;
+-     transition: background-color transition-time.$transition-time ease;
+- 
+-+    background-color: var(--color1);
+-+    border-bottom: 1px solid var(--color4);
+-+
+-     z-index: 2;
+--    
+-+
+-     &__container {
+-         position: absolute;
+- 
+-         display: flex;
+--        justify-content: space-evenly;
+-+        justify-content: space-between;
+- 
+-         width: layout.$layout-default-width;
+-         height: header.$height-size;
+-@@ -45,7 +48,7 @@
+-         align-items: center;
+- 
+- 
+--        width: 30%;
+-+        width: 50%;
+-         height: 100%;
+- 
+-         &__link {
+-@@ -64,9 +67,9 @@
+- 
+-             display: flex;
+-             align-items: center;
+--            justify-content: center;
+-             gap: 6%;
+- 
+-+
+-             li {
+-                 margin: 0;
+-                 padding: 0;
+-@@ -85,36 +88,39 @@
+-         justify-content: flex-end;
+-         align-items: center;
+- 
+--        width: 30%;
+--        gap: 10%;
+--
+--        button {
+--            all: unset;
+--
+--            cursor: pointer;
+--        }
+-+        width: 50%;
+-+        gap: 25px;
+- 
+-         &__login {
+--            @include button.button-style(var(--color3));
+--
+--            text-decoration: none;
+-+            border-radius: 10rem;
+- 
+-             display: flex;
+-             align-items: center;
+-             justify-content: space-evenly;
+- 
+--            width: 90px;
+--            height: 30px;
+-+            svg {
+-+                width: 30px;
+-+                height: 30px;
+-+            }
+-+        }
+-+
+-+        &__fast-search {
+-+            &-input {
+-+                width: 45%;
+-+                height: 35%;
+-+                font-size: text.$font-size5;
+-+            }
+-+
+-+            &-icon {
+-+                width: 25%;
+-+                height: 50%;
+- 
+--            span {    
+--                border-radius: border-radius.$border-radius;
+--                color: var(--color1);
+-             }
+-         }
+-     }
+- 
+--    &--scroll {
+--        background-color: var(--color1);
+--        border-bottom: 1px solid var(--color4);
+-+    &--home {
+-+        background: none;
+-+        border-bottom: none;
+-     }
+- }
+-\ No newline at end of file
+-diff --git a/src/Components/Header/header.tsx b/src/Components/Header/header.tsx
+-index 589dc23..fbd8c7a 100644
+---- a/src/Components/Header/header.tsx
+-+++ b/src/Components/Header/header.tsx
+-@@ -1,38 +1,60 @@
+- //# Components //
+- import Link from '../Global/link'
+--import Text from '../Global/text'
+--import Button from '../Global/Inputs/button'
+-+import Input from '../Global/Inputs/input'
+- import Img from '../Global/img'
+-+import TitlesGrid from '../Global/Titles/titlesgrid'
+- //# Libs //
+-+import { useLocation } from 'react-router'
+- import { useWindowScroll } from 'react-use'
+-+import { useFormController } from '../../Shared/form/FormController'
+-+import { useState } from 'react'
+- //# Classes //
+- import './header.scss'
+- //# Icons //
+- import { FaMagnifyingGlass } from "react-icons/fa6";
+-+import { IoPersonSharp } from "react-icons/io5";
+-+import { GetTitlesByFastFilters } from '../../Shared/api/FetchTitle'
+-+import { fasttitle } from '../../Shared/types/Data/title'
+- 
+--
+-+//.. LocalComponents //
+-+function Logo() {
+-+    return (
+-+        <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
+-+            <Img
+-+                className={'header__logo'}
+-+                src={'/manga-logo.png'}
+-+                alt='logo'
+-+                noPreview={true}
+-+            />
+-+        </Link>
+-+    )
+-+}
+- 
+- export default function Header() {
+--    //.. Variables //
+-     const { y } = useWindowScroll()
+-+    const location = useLocation()
+-+    const { InputsController } = useFormController({
+-+        handleSubmit: handleSubmit,
+-+        submitOnChange: true
+-+    })
+-+
+-+    const [data, setData] = useState<fasttitle[] | undefined>(undefined)
+-+
+-+    async function handleSubmit(data: {
+-+        name: string
+-+    }) {
+-+        if (!data.name?.trim()) return
+- 
+--    //.. Components //
+--    function Logo() {
+--        return (
+--            <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
+--                <Img
+--                    className={'header__logo'}
+--                    src={'/manga-logo.png'}
+--                    alt='logo'
+--                    noPreview={true}
+--                />
+--            </Link>
+--        )
+-+        const res = await GetTitlesByFastFilters(data.name)
+-+        if (res) setData(res)
+-     }
+- 
+-+
+-+    console.log(data)
+-+
+-     return (
+-         <>
+--            <header className={`header ${y > 0 ? 'header--scroll' : ''}`}>
+-+            <header className={`header ${location.pathname === "/" && y === 0 ? 'header--home' : ''}`}>
+-                 <div className={`header__container`}>
+-                     <nav className={`header__nav`}>
+-                         <ul>
+-@@ -57,14 +79,27 @@ export default function Header() {
+-                         </ul>
+-                     </nav>
+-                     <section className='header__actions'>
+-+                        <Input
+-+                            type='text'
+-+                            className='header__actions__fast-search-input'
+-+
+-+                            name='name'
+-+                            InputsController={InputsController}
+-+
+-+                            placeHolder='Search'
+-+                            autoComplete='off'
+-+                            Icon={FaMagnifyingGlass}
+-+                            iconClassName={'header__actions__fast-search-icon'}
+-+                            reverseIcon={true}
+-+                        />
+-+                        {
+-+                            data &&
+-+                            <>
+-+                            </>
+-+                        }
+-                         <Link className='header__actions__login' >
+--                            <Text tag='span' no_select={true}>
+--                                Login In
+--                            </Text>
+-+                            <IoPersonSharp />
+-                         </Link>
+--                        <Button defaultStyle={false} ariaLabel={'search titles'}>
+--                            <FaMagnifyingGlass />
+--                        </Button>
+-                     </section>
+-                 </div>
+-             </header>
+-diff --git a/src/Shared/api/FetchTitle.ts b/src/Shared/api/FetchTitle.ts
+-index f876f62..5fc42b9 100644
+---- a/src/Shared/api/FetchTitle.ts
+-+++ b/src/Shared/api/FetchTitle.ts
+-@@ -1,7 +1,7 @@
+- //# Services //
+- import PerformFetch from './PerformFetch'
+- //# Types //
+--import type { title, titlecompact } from '../types/Data/title'
+-+import type { title, titlecompact, fasttitle } from '../types/Data/title'
+- import type { latestupdate } from '../types/Data/latestupdates'
+- 
+- export async function GetFeaturedTitles(limit: number = 10) {
+-@@ -24,6 +24,11 @@ export async function GetTitleById(id: number) {
+-     return await PerformFetch<title[]>({ url: `/Title?id=${id}` })
+- }
+- 
+-+export async function GetTitlesByFastFilters(name: string) {
+-+    return await PerformFetch<fasttitle[]>({
+-+        url: `/Title/search/fast?name=${name}`
+-+    });
+-+}
+- export async function GetTitlesByFilters(data: {
+-     name?: string,
+-     author?: string,
+-diff --git a/src/Shared/form/FormController.ts b/src/Shared/form/FormController.ts
+-index 4bd16c6..df3df56 100644
+---- a/src/Shared/form/FormController.ts
+-+++ b/src/Shared/form/FormController.ts
+-@@ -1,10 +1,11 @@
+- //# Types //
+- import type { InputsController, SubmitController } from '../types/FormController'
+- //# Libs //
+--import { useState } from "react";
+-+import { useEffect, useState } from "react";
+- 
+- type config = {
+--    handleSubmit: (...args: any[]) => Promise<any>;
+-+    handleSubmit: (...args: any[]) => Promise<any>
+-+    submitOnChange?: boolean
+- }
+- 
+- /**
+-@@ -21,7 +22,7 @@ type config = {
+-  * 
+-  */
+- export function useFormController(config: config) {
+--    const { handleSubmit } = config
+-+    const { handleSubmit, submitOnChange } = config
+- 
+-     const [data, setData] = useState<{ [key: string]: any }>({})
+- 
+-@@ -31,6 +32,7 @@ export function useFormController(config: config) {
+-         data: data,
+-     }
+- 
+-+    //.. Updates the form data when an input changes; toggles values in an array for checkboxes, replaces the value for other input types
+-     function onChange(event: React.ChangeEvent<HTMLInputElement>) {
+-         const { name, value, type } = event.target
+- 
+-@@ -51,6 +53,7 @@ export function useFormController(config: config) {
+-         }
+-     }
+- 
+-+    //.. Manually sets the value of a field by name, without needing an input change event
+-     function changeValue(name: string, value: any) {
+-         setData(prev => ({ ...prev, [name]: value }))
+-     }
+-@@ -59,11 +62,23 @@ export function useFormController(config: config) {
+-     const SubmitController: SubmitController = {
+-         onSubmit: onSubmit,
+-     }
+-+
+-+    //.. Handles the form submit using the handleSubmit function provided to the hook
+-     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+-         event.preventDefault()
+- 
+-         await handleSubmit(InputsController.data)
+-     }
+- 
+-+    //.. Automatically calls handleSubmit ~1s after the user stops changing inputs
+-+    useEffect(() => {
+-+        if (!submitOnChange) return
+-+        //.. Debounces the automatic submit by 1s so it only fires after the user stops typing
+-+        const timeout = setTimeout(() => {
+-+            handleSubmit(data)
+-+        }, 1000)
+-+        return () => clearTimeout(timeout)
+-+    }, [data])
+-+
+-     return { InputsController, SubmitController }
+- }
+-\ No newline at end of file
+-diff --git a/src/Shared/types/Data/title.ts b/src/Shared/types/Data/title.ts
+-index 9ec0a3e..64686e2 100644
+---- a/src/Shared/types/Data/title.ts
+-+++ b/src/Shared/types/Data/title.ts
+-@@ -6,8 +6,8 @@ export type chapterTranslation = {
+-     scanGroupName: string,
+-     languageId: number
+- }
+--export type chapter = { 
+--    id: number, 
+-+export type chapter = {
+-+    id: number,
+-     number: number
+-     translations: chapterTranslation[]
+- }
+-@@ -19,7 +19,7 @@ type titlebase = {
+-     synopsis: string
+-     publicationDate: string
+-     img: string
+--    
+-+
+-     createdAt: string
+- 
+-     status: string
+-@@ -27,6 +27,12 @@ type titlebase = {
+-     demographic: string
+- }
+- 
+-+export type fasttitle = {
+-+    id: number
+-+    name: string
+-+    img: string
+-+    alternativenames?: alternativename[]
+-+}
+- export type titlecompact = titlebase
+- 
+- export type title = titlebase & {
+diff --git a/public/manga-logo.png b/public/manga-logo.png
+index 73ad2e3..46c2a70 100644
+Binary files a/public/manga-logo.png and b/public/manga-logo.png differ
 diff --git a/src/Components/Global/Inputs/input.tsx b/src/Components/Global/Inputs/input.tsx
-index 7f909bb..98ef3f1 100644
+index 98ef3f1..9c76e1f 100644
 --- a/src/Components/Global/Inputs/input.tsx
 +++ b/src/Components/Global/Inputs/input.tsx
-@@ -1,67 +1,91 @@
+@@ -1,7 +1,7 @@
  //# Utils //
  import FilterClasses from '../../../Shared/utils/FilterClasses';
  //# Libs //
--import { useRef, useEffect } from 'react';
-+import { useEffect, useRef } from 'react';
-+import type { IconType } from 'react-icons';
+-import { useEffect, useRef } from 'react';
++import { useRef } from 'react';
+ import type { IconType } from 'react-icons';
  //# Types //
--import type { InputsController } from '../../../Shared/types/FormController'
--import { IconType } from 'react-icons';
-+import type { InputsController } from '../../../Shared/types/FormController';
- //# Classes //
--import './input.scss'
-+import './input.scss';
- 
--type input = {
-+type InputProps = {
-     /** type of the input */
--    type: string
-+    type: string;
-     /** name of the input, used in 'data' from 'FormController' Hook */
--    name: string
-+    name: string;
+ import type { InputsController } from '../../../Shared/types/FormController';
+@@ -15,12 +15,20 @@ type InputProps = {
+     name: string;
      /** additional CSS classes to apply */
--    className?: string
-+    className?: string;
+     className?: string;
++    /** CSS classes for the input's wrapper `<div>` */
++    divClassName?: string;
      /** aria-label of the input */
--    ariaLabel?: string
--    /** autoComplete of the input */
--    autoComplete?: "on" | "off"
--    /** add a icon to input */
--    Icon?: IconType
--    /** controller object containing InputsController from 'FormController' Hook */
--    InputsController: InputsController
--}
-+    ariaLabel?: string;
-+    /** placeholder of the input */
-+    placeHolder?: string;
-+    /** fires additionally on input change */
-+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-+    /** autocomplete of the input */
-+    autoComplete?: 'on' | 'off';
-+    /** add an icon to the input */
-+    Icon?: IconType;
-+    /** add a className to the icon */
-+    iconClassName?: string;
-+    /** place the input icon on the left instead of the right */
-+    reverseIcon?: boolean;
-+    /** controller object containing InputsController from FormController Hook */
-+    InputsController: InputsController;
-+};
-+
-+type DefaultInputProps = Omit<InputProps, 'Icon' | 'iconClassName' | 'reverseIcon'> & { inputRef: React.RefObject<HTMLInputElement | null>}
+     ariaLabel?: string;
++    /** style of the input */
++    style?: React.CSSProperties;
+     /** placeholder of the input */
+     placeHolder?: string;
+     /** fires additionally on input change */
+     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
++    /** onBlur event of the input */
++    onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
++    /** onFocus event of the input */
++    onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void; 
+     /** autocomplete of the input */
+     autoComplete?: 'on' | 'off';
+     /** add an icon to the input */
+@@ -44,6 +52,9 @@ function DefaultInput({
+     autoComplete = 'on',
+     InputsController,
+     placeHolder,
++    onFocus,
++    style,
++    onBlur,
+     onChange,
+ }: DefaultInputProps) {
+     return (
+@@ -55,6 +66,9 @@ function DefaultInput({
+             placeholder={placeHolder}
+             className={FilterClasses(`input ${className}`)}
+             aria-label={ariaLabel || undefined}
++            onBlur={onBlur}
++            onFocus={onFocus}
++            style={style}
+             autoComplete={autoComplete}
+             onChange={(event) => {
+                 InputsController.onChange(event);
+@@ -68,14 +82,11 @@ export default function Input({
+     Icon,
+     reverseIcon,
+     iconClassName,
++    divClassName,
+     ...inputProps
+ }: InputProps) {
+     const inputRef = useRef<HTMLInputElement>(null);
  
-+function DefaultInput({
-+    type,
-+    inputRef,
-+    name,
-+    className = '',
-+    ariaLabel,
-+    autoComplete = 'on',
-+    InputsController,
-+    placeHolder,
-+    onChange,
-+}: DefaultInputProps) {
-+    return (
-+        <input
-+            ref={inputRef}
-+            type={type}
-+            name={name}
-+            value={InputsController.data[name] ?? ''}
-+            placeholder={placeHolder}
-+            className={FilterClasses(`input ${className}`)}
-+            aria-label={ariaLabel || undefined}
-+            autoComplete={autoComplete}
-+            onChange={(event) => {
-+                InputsController.onChange(event);
-+                onChange?.(event);
-+            }}
-+        />
-+    );
-+}
- 
--export default function Input({ type, name, className = '', ariaLabel, autoComplete = "on", Icon, InputsController }: input) {
-+export default function Input({
-+    Icon,
-+    reverseIcon,
-+    iconClassName,
-+    ...inputProps
-+}: InputProps) {
-+    const inputRef = useRef<HTMLInputElement>(null);
- 
--    //.. Used to prevent input from losing focus when the user types
--    const ref = useRef<HTMLInputElement>(null)
-     useEffect(() => {
--        ref.current?.focus();
--    }, [InputsController.data[name]]);
-+        inputRef.current?.focus();
-+    }, [inputProps.InputsController.data[inputProps.name]]);
- 
--    function DefaultInput() {
--        return (
--            <input
--                ref={ref}
--                type={type}
--                name={name}
--                value={InputsController.data[name]}
--                className={FilterClasses(`
--                    input
--                    ${className}
--                `)}
--                aria-label={ariaLabel || undefined}
--                onChange={InputsController.onChange}
--                autoComplete={autoComplete}
--            />
--        )
--    }
-+    const input = <DefaultInput {...inputProps} inputRef={inputRef}/>
-+   
-+    if (!Icon) return input
-+    
-+    const icon = <Icon className={`input-icon-container-icon ${iconClassName ?? ''}`}/>
-+  
+-    useEffect(() => {
+-        inputRef.current?.focus();
+-    }, [inputProps.InputsController.data[inputProps.name]]);
+-
+     const input = <DefaultInput {...inputProps} inputRef={inputRef}/>
+    
+     if (!Icon) return input
+@@ -84,7 +95,7 @@ export default function Input({
+   
  
      return (
--        <>
--            {Icon ?
--                <div className={`input-icon-container ${className}`}>
--                    <Icon />
--                    <DefaultInput />
--                </div>
--                :
--                <DefaultInput />
--            }
--        </>
--    )
-+        <div className={`input-icon-container ${inputProps.className ?? ''}`}>
-+            {reverseIcon ? <>{input}{icon}</> : <> {icon}{input}</>}
-+        </div>
-+    );
- }
-\ No newline at end of file
-diff --git a/src/Components/Header/header.scss b/src/Components/Header/header.scss
-index d2648ef..269260e 100644
---- a/src/Components/Header/header.scss
-+++ b/src/Components/Header/header.scss
-@@ -17,13 +17,16 @@
-     height: header.$height-size;
-     transition: background-color transition-time.$transition-time ease;
+-        <div className={`input-icon-container ${inputProps.className ?? ''}`}>
++        <div className={`input-icon-container ${divClassName} ${inputProps.className ?? ''}`}>
+             {reverseIcon ? <>{input}{icon}</> : <> {icon}{input}</>}
+         </div>
+     );
+diff --git a/src/Components/Global/Titles/titlesgrid.scss b/src/Components/Global/Titles/titlesgrid.scss
+index 7d8e69e..d3b95aa 100644
+--- a/src/Components/Global/Titles/titlesgrid.scss
++++ b/src/Components/Global/Titles/titlesgrid.scss
+@@ -64,7 +64,8 @@
+         }
+     }
  
-+    background-color: var(--color1);
-+    border-bottom: 1px solid var(--color4);
+-    &--card, &--latestupdates {
++    &--card,
++    &--latestupdates {
+         margin: 0;
+         padding: 0;
+         list-style: none;
+@@ -104,7 +105,8 @@
+         }
+     }
+ 
+-    &--compact, &--latestupdatescompact {
++    &--compact,
++    &--latestupdatescompact {
+         .titlegrid__list {
+             justify-content: center;
+ 
+@@ -141,4 +143,27 @@
+ 
+ 
+     }
 +
-     z-index: 2;
--    
++    &--fasttitles {
++        list-style: none;
++        padding: 0;
++        margin: 0;
 +
-     &__container {
-         position: absolute;
- 
-         display: flex;
--        justify-content: space-evenly;
-+        justify-content: space-between;
- 
-         width: layout.$layout-default-width;
-         height: header.$height-size;
-@@ -45,7 +48,7 @@
-         align-items: center;
- 
- 
--        width: 30%;
-+        width: 50%;
-         height: 100%;
- 
-         &__link {
-@@ -64,9 +67,9 @@
- 
-             display: flex;
-             align-items: center;
--            justify-content: center;
-             gap: 6%;
- 
++        .titlegrid__item {
++            &-name {
++                margin: 0;
++                font-size: text.$font-size5-25;
++            }
 +
-             li {
-                 margin: 0;
-                 padding: 0;
-@@ -85,36 +88,39 @@
-         justify-content: flex-end;
-         align-items: center;
- 
--        width: 30%;
--        gap: 10%;
--
--        button {
--            all: unset;
--
--            cursor: pointer;
--        }
-+        width: 50%;
-+        gap: 25px;
- 
-         &__login {
--            @include button.button-style(var(--color3));
--
--            text-decoration: none;
-+            border-radius: 10rem;
- 
-             display: flex;
-             align-items: center;
-             justify-content: space-evenly;
- 
--            width: 90px;
--            height: 30px;
-+            svg {
-+                width: 30px;
-+                height: 30px;
++            &-img {
++                width: 58px;
++                height: 80px;
++            }
++
++            &-article {
++                width: fit-content;
++                gap: 10px;
 +            }
 +        }
-+
-+        &__fast-search {
-+            &-input {
-+                width: 45%;
-+                height: 35%;
-+                font-size: text.$font-size5;
-+            }
-+
-+            &-icon {
-+                width: 25%;
-+                height: 50%;
++    }
+ }
+\ No newline at end of file
+diff --git a/src/Components/Global/Titles/titlesgrid.tsx b/src/Components/Global/Titles/titlesgrid.tsx
+index 8cce1a1..d18949b 100644
+--- a/src/Components/Global/Titles/titlesgrid.tsx
++++ b/src/Components/Global/Titles/titlesgrid.tsx
+@@ -9,8 +9,9 @@ import { staticMapper } from '../../../Shared/utils/staticHandler'
+ //# Templates //
+ import { createTitle } from '../../../Shared/templates/title'
+ import { createLatestUpdate } from '../../../Shared/templates/latestupdate'
++import { createFastTitle } from '../../../Shared/templates/fasttitle'
+ //# Types //
+-import { title, titlecompact } from '../../../Shared/types/Data/title'
++import { fasttitle, title, titlecompact } from '../../../Shared/types/Data/title'
+ import { latestupdate } from '../../../Shared/types/Data/latestupdates'
+ //# Config //
+ import { grid } from '../../../config/Components/title'
+@@ -22,17 +23,20 @@ type TitlesGrid =
+     | { variant: 'compact'; data?: titlecompact[] }
+     | { variant: 'latestupdates'; data?: latestupdate[] }
+     | { variant: 'latestupdatescompact'; data?: latestupdate[] }
++    | { variant: 'fasttitles'; data?: fasttitle[] }
  
--            span {    
--                border-radius: border-radius.$border-radius;
--                color: var(--color1);
+ type TitleItemCompactProps = { variant: 'compact'; title: titlecompact; isLoading: boolean }
+ type TitleItemCardProps = { variant: 'card'; title: title; isLoading: boolean }
+ type TitleItemLatestProps = { variant: 'latestupdates', title: latestupdate, isLoading: boolean }
+ type TitleItemLatestCompactProps = { variant: 'latestupdatescompact', title: latestupdate, isLoading: boolean }
++type TitleItemFastTitlesProps = { variant: 'fasttitles', title: fasttitle, isLoading: boolean }
+ 
+ type TitleInfoProps =
+     | TitleItemCardProps
+     | TitleItemCompactProps
+     | TitleItemLatestProps
+     | TitleItemLatestCompactProps
++    | TitleItemFastTitlesProps
+ 
+ // Column-based grid: used by 'compact' and 'latestupdatescompact', which share
+ // the exact same structure (chunkArray + Array.from(columns).map)
+@@ -135,9 +139,16 @@ function TitleInfo({ title, variant, isLoading }: TitleInfoProps) {
+                             </Text>
+                         </section>
+                         :
+-                        <>
+-                            INVALID VARIANT 'TitleInfo'
+-                        </>
++                        variant === 'fasttitles' ?
++                            <section className='titlegrid__item-info-container'>
++                                <Text not_exceed_X={true} className={`titlegrid__item-name`} tag={'h3'}>
++                                    {title.name}
++                                </Text>
++                            </section>
++                            :
++                            <>
++                                INVALID VARIANT 'TitleInfo'
++                            </>
+     )
+ }
+ function TitleArticle({ to, alt, children, src }: { to: string; alt: string; children: React.ReactNode, src: string }) {
+@@ -155,6 +166,16 @@ function TitleArticle({ to, alt, children, src }: { to: string; alt: string; chi
+         </Link>
+     )
+ }
++
++function TitleItemFast({ title, variant, isLoading }: TitleItemFastTitlesProps) {
++    return (
++        <li key={title.id}>
++            <TitleArticle to={`/title/${title.id}/${title.name}`} alt={`Cover of ${title.name}`} src={title.img}>
++                <TitleInfo title={title} variant={variant} isLoading={isLoading} />
++            </TitleArticle>
++        </li>
++    )
++}
+ function TitleItemLatest({ title, variant, isLoading }: TitleItemLatestProps | TitleItemLatestCompactProps) {
+     return (
+         <li key={title.chapterTranslationId}>
+@@ -275,6 +296,23 @@ export default function TitlesGrid({
+             </ul>
+         )
+     }
++    else if (variant === "fasttitles") {
++        const frmtdData = data !== undefined ? data : Array.from({ length: 5 }, createFastTitle)
++        return (
++            <ul className={wrapperClass} style={wrapperStyle}>
++                {
++                    frmtdData.map((title) =>
++                        <TitleItemFast
++                            key={title.id}
++                            title={title}
++                            variant={variant}
++                            isLoading={isLoading}
++                        />
++                    )
++                }
++            </ul>
++        )
++    }
+     else {
+         return <>INVALID VARIANT</>
+     }
+diff --git a/src/Components/Header/header.scss b/src/Components/Header/header.scss
+index 269260e..9c33bc8 100644
+--- a/src/Components/Header/header.scss
++++ b/src/Components/Header/header.scss
+@@ -38,8 +38,9 @@
+     }
+ 
+     &__logo {
+-        height: 100%;
+-        width: 55px;
++        height: 65px;
++        width: 65px;
++        margin-right: 40px;
+         @include no-select.no-select;
+     }
+ 
+@@ -67,7 +68,6 @@
+ 
+             display: flex;
+             align-items: center;
+-            gap: 6%;
+ 
+ 
+             li {
+@@ -77,8 +77,10 @@
+                 width: fit-content;
+                 height: fit-content;
+ 
+-                font-size: text.$font-size5;
+-                font-weight: 500;
++                font-size: text.$font-size5-25;
++                font-weight: bold;
++
++                margin-right: 30px;
              }
          }
      }
+@@ -91,6 +93,25 @@
+         width: 50%;
+         gap: 25px;
  
--    &--scroll {
--        background-color: var(--color1);
--        border-bottom: 1px solid var(--color4);
-+    &--home {
-+        background: none;
-+        border-bottom: none;
-     }
- }
-\ No newline at end of file
++
++
++        &__blur {
++            position: fixed;
++            top: 0;
++            left: 0;
++            width: 100vw;
++            height: 100vh;
++            pointer-events: none;
++            z-index: -1;
++            user-select: none;
++
++            background-color: var(--color6);
++
++            opacity: 0;
++
++            transition: opacity transition-time.$fast-transition-time ease;
++        }
++
+         &__login {
+             border-radius: 10rem;
+ 
+@@ -105,10 +126,37 @@
+         }
+ 
+         &__fast-search {
++            position: relative;
++
++            display: flex;
++            justify-content: flex-end;
++            align-items: center;
++
++            width: 100%;
++            height: 100%;
++
+             &-input {
+                 width: 45%;
+                 height: 35%;
+                 font-size: text.$font-size5;
++
++                &--focus {
++                    width: 100%;
++                }
++            }
++
++            &-results {
++                position: absolute;
++                width: 95%;
++                height: fit-content;
++
++                top: 60px;
++                right: 0;
++
++                padding: 2.5%;
++
++                background-color: var(--color1);
++                border-radius: border-radius.$border-radius;
+             }
+ 
+             &-icon {
 diff --git a/src/Components/Header/header.tsx b/src/Components/Header/header.tsx
-index 589dc23..fbd8c7a 100644
+index fbd8c7a..056bdc9 100644
 --- a/src/Components/Header/header.tsx
 +++ b/src/Components/Header/header.tsx
-@@ -1,38 +1,60 @@
- //# Components //
- import Link from '../Global/link'
--import Text from '../Global/text'
--import Button from '../Global/Inputs/button'
-+import Input from '../Global/Inputs/input'
+@@ -3,9 +3,11 @@ import Link from '../Global/link'
+ import Input from '../Global/Inputs/input'
  import Img from '../Global/img'
-+import TitlesGrid from '../Global/Titles/titlesgrid'
+ import TitlesGrid from '../Global/Titles/titlesgrid'
++import Text from '../Global/text'
  //# Libs //
-+import { useLocation } from 'react-router'
+ import { useLocation } from 'react-router'
  import { useWindowScroll } from 'react-use'
-+import { useFormController } from '../../Shared/form/FormController'
-+import { useState } from 'react'
++import { useRef, useEffect } from 'react'
+ import { useFormController } from '../../Shared/form/FormController'
+ import { useState } from 'react'
  //# Classes //
- import './header.scss'
- //# Icons //
- import { FaMagnifyingGlass } from "react-icons/fa6";
-+import { IoPersonSharp } from "react-icons/io5";
-+import { GetTitlesByFastFilters } from '../../Shared/api/FetchTitle'
-+import { fasttitle } from '../../Shared/types/Data/title'
- 
--
-+//.. LocalComponents //
-+function Logo() {
-+    return (
-+        <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
-+            <Img
-+                className={'header__logo'}
-+                src={'/manga-logo.png'}
-+                alt='logo'
-+                noPreview={true}
-+            />
-+        </Link>
-+    )
-+}
- 
+@@ -33,28 +35,44 @@ function Logo() {
  export default function Header() {
--    //.. Variables //
      const { y } = useWindowScroll()
-+    const location = useLocation()
-+    const { InputsController } = useFormController({
-+        handleSubmit: handleSubmit,
-+        submitOnChange: true
-+    })
+     const location = useLocation()
++    const searchRef = useRef<HTMLDivElement>(null)
 +
-+    const [data, setData] = useState<fasttitle[] | undefined>(undefined)
-+
-+    async function handleSubmit(data: {
-+        name: string
-+    }) {
-+        if (!data.name?.trim()) return
+     const { InputsController } = useFormController({
+         handleSubmit: handleSubmit,
+         submitOnChange: true
+     })
  
--    //.. Components //
--    function Logo() {
--        return (
--            <Link to={'/'} defaultStyle={false} ariaLabel={'Go to home'}>
--                <Img
--                    className={'header__logo'}
--                    src={'/manga-logo.png'}
--                    alt='logo'
--                    noPreview={true}
--                />
--            </Link>
--        )
-+        const res = await GetTitlesByFastFilters(data.name)
-+        if (res) setData(res)
+     const [data, setData] = useState<fasttitle[] | undefined>(undefined)
++    const [isEmpty, setIsEmpty] = useState(true)
++    const [focusInput, setFocusInput] = useState(false)
++
+ 
+-    async function handleSubmit(data: {
++    function handleBlur(e: React.FocusEvent) {
++        if (searchRef.current?.contains(e.relatedTarget as Node)) return
++        setFocusInput(false)
++    }
++    async function handleSubmit(inputdata: {
+         name: string
+     }) {
+-        if (!data.name?.trim()) return
++        if (!inputdata.name?.trim()) return
+ 
+-        const res = await GetTitlesByFastFilters(data.name)
+-        if (res) setData(res)
++        const res = await GetTitlesByFastFilters(inputdata.name)
++        if (res) {
++            setData(res)
++        }
      }
  
-+
-+    console.log(data)
-+
+-
+-    console.log(data)
++    useEffect(() => {
++        setFocusInput(false)
++        setIsEmpty(true)
++        setData(undefined)
++        InputsController.changeValue('name', '')
++    }, [location.pathname])
+ 
      return (
          <>
--            <header className={`header ${y > 0 ? 'header--scroll' : ''}`}>
-+            <header className={`header ${location.pathname === "/" && y === 0 ? 'header--home' : ''}`}>
+             <header className={`header ${location.pathname === "/" && y === 0 ? 'header--home' : ''}`}>
++
                  <div className={`header__container`}>
                      <nav className={`header__nav`}>
                          <ul>
-@@ -57,14 +79,27 @@ export default function Header() {
+@@ -79,24 +97,63 @@ export default function Header() {
                          </ul>
                      </nav>
                      <section className='header__actions'>
-+                        <Input
-+                            type='text'
-+                            className='header__actions__fast-search-input'
+-                        <Input
+-                            type='text'
+-                            className='header__actions__fast-search-input'
++                        <section
++                            className='header__actions__fast-search'
++                            ref={searchRef}
++                        >
++                            <div
++                                className='header__actions__blur'
++                                aria-hidden={true}
++                                style={{
++                                    opacity: focusInput ? '0.5' : '0'
++                                }}
++                            >
++                            </div>
++                            <Input
++                                type='text'
 +
-+                            name='name'
-+                            InputsController={InputsController}
++                                className='header__actions__fast-search-input'
++                                divClassName={focusInput ? 'header__actions__fast-search-input--focus' : ''}
 +
-+                            placeHolder='Search'
-+                            autoComplete='off'
-+                            Icon={FaMagnifyingGlass}
-+                            iconClassName={'header__actions__fast-search-icon'}
-+                            reverseIcon={true}
-+                        />
-+                        {
-+                            data &&
-+                            <>
-+                            </>
-+                        }
++                                name='name'
++                                InputsController={InputsController}
++
++                                placeHolder='Search'
++                                autoComplete='off'
++                                Icon={FaMagnifyingGlass}
++                                iconClassName={'header__actions__fast-search-icon'}
++                                reverseIcon={true}
+ 
+-                            name='name'
+-                            InputsController={InputsController}
++                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
++                                    setData(undefined)
++                                    setIsEmpty(!e.target.value.trim())
++                                }}
++                                onFocus={() => setFocusInput(true)}
++                                onBlur={handleBlur}
++                            />
++                            {
++                                focusInput &&
++                                <section className='header__actions__fast-search-results'>
++                                    {
++                                        isEmpty ?
++                                            <Text tag='span'>Enter a search query...</Text>
++                                            : data === undefined ?
++                                                <TitlesGrid
++                                                    variant='fasttitles'
++                                                    data={undefined}
++                                                />
++                                                : data.length <= 0 ?
++                                                    <Text tag='span'>No results found.</Text>
++                                                    :
++                                                    <TitlesGrid
++                                                        variant='fasttitles'
++                                                        data={data}
++                                                    />
++                                    }
++                                </section>
++                            }
++                        </section>
+ 
+-                            placeHolder='Search'
+-                            autoComplete='off'
+-                            Icon={FaMagnifyingGlass}
+-                            iconClassName={'header__actions__fast-search-icon'}
+-                            reverseIcon={true}
+-                        />
+-                        {
+-                            data &&
+-                            <>
+-                            </>
+-                        }
                          <Link className='header__actions__login' >
--                            <Text tag='span' no_select={true}>
--                                Login In
--                            </Text>
-+                            <IoPersonSharp />
+                             <IoPersonSharp />
                          </Link>
--                        <Button defaultStyle={false} ariaLabel={'search titles'}>
--                            <FaMagnifyingGlass />
--                        </Button>
-                     </section>
-                 </div>
-             </header>
-diff --git a/src/Shared/api/FetchTitle.ts b/src/Shared/api/FetchTitle.ts
-index f876f62..5fc42b9 100644
---- a/src/Shared/api/FetchTitle.ts
-+++ b/src/Shared/api/FetchTitle.ts
-@@ -1,7 +1,7 @@
- //# Services //
- import PerformFetch from './PerformFetch'
- //# Types //
--import type { title, titlecompact } from '../types/Data/title'
-+import type { title, titlecompact, fasttitle } from '../types/Data/title'
- import type { latestupdate } from '../types/Data/latestupdates'
+diff --git a/src/Components/Title/title.tsx b/src/Components/Title/title.tsx
+index c92d987..c7f21c8 100644
+--- a/src/Components/Title/title.tsx
++++ b/src/Components/Title/title.tsx
+@@ -220,9 +220,7 @@ export default function Title() {
  
- export async function GetFeaturedTitles(limit: number = 10) {
-@@ -24,6 +24,11 @@ export async function GetTitleById(id: number) {
-     return await PerformFetch<title[]>({ url: `/Title?id=${id}` })
- }
+     useEffect(() => {
+         req()
+-    }, [])
+-
+-    console.log(data?.synopsis)
++    }, [id])
  
-+export async function GetTitlesByFastFilters(name: string) {
-+    return await PerformFetch<fasttitle[]>({
-+        url: `/Title/search/fast?name=${name}`
-+    });
-+}
- export async function GetTitlesByFilters(data: {
-     name?: string,
-     author?: string,
+     return (
+         <>
 diff --git a/src/Shared/form/FormController.ts b/src/Shared/form/FormController.ts
-index 4bd16c6..df3df56 100644
+index df3df56..6c7de7b 100644
 --- a/src/Shared/form/FormController.ts
 +++ b/src/Shared/form/FormController.ts
-@@ -1,10 +1,11 @@
- //# Types //
- import type { InputsController, SubmitController } from '../types/FormController'
- //# Libs //
--import { useState } from "react";
-+import { useEffect, useState } from "react";
- 
- type config = {
--    handleSubmit: (...args: any[]) => Promise<any>;
-+    handleSubmit: (...args: any[]) => Promise<any>
-+    submitOnChange?: boolean
- }
- 
- /**
-@@ -21,7 +22,7 @@ type config = {
-  * 
-  */
- export function useFormController(config: config) {
--    const { handleSubmit } = config
-+    const { handleSubmit, submitOnChange } = config
- 
-     const [data, setData] = useState<{ [key: string]: any }>({})
- 
-@@ -31,6 +32,7 @@ export function useFormController(config: config) {
-         data: data,
-     }
- 
-+    //.. Updates the form data when an input changes; toggles values in an array for checkboxes, replaces the value for other input types
-     function onChange(event: React.ChangeEvent<HTMLInputElement>) {
-         const { name, value, type } = event.target
- 
-@@ -51,6 +53,7 @@ export function useFormController(config: config) {
-         }
-     }
- 
-+    //.. Manually sets the value of a field by name, without needing an input change event
-     function changeValue(name: string, value: any) {
-         setData(prev => ({ ...prev, [name]: value }))
-     }
-@@ -59,11 +62,23 @@ export function useFormController(config: config) {
-     const SubmitController: SubmitController = {
-         onSubmit: onSubmit,
-     }
-+
-+    //.. Handles the form submit using the handleSubmit function provided to the hook
-     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-         event.preventDefault()
- 
+@@ -70,13 +70,13 @@ export function useFormController(config: config) {
          await handleSubmit(InputsController.data)
      }
  
-+    //.. Automatically calls handleSubmit ~1s after the user stops changing inputs
-+    useEffect(() => {
-+        if (!submitOnChange) return
-+        //.. Debounces the automatic submit by 1s so it only fires after the user stops typing
-+        const timeout = setTimeout(() => {
-+            handleSubmit(data)
-+        }, 1000)
-+        return () => clearTimeout(timeout)
-+    }, [data])
-+
-     return { InputsController, SubmitController }
- }
+-    //.. Automatically calls handleSubmit ~1s after the user stops changing inputs
++    //.. Automatically calls handleSubmit ~0.5s after the user stops changing inputs
+     useEffect(() => {
+         if (!submitOnChange) return
+-        //.. Debounces the automatic submit by 1s so it only fires after the user stops typing
++        //.. Debounces the automatic submit by 0.5s so it only fires after the user stops typing
+         const timeout = setTimeout(() => {
+             handleSubmit(data)
+-        }, 1000)
++        }, 500)
+         return () => clearTimeout(timeout)
+     }, [data])
+ 
+diff --git a/src/Shared/styles/_themes.scss b/src/Shared/styles/_themes.scss
+index e48e1c9..abea2f5 100644
+--- a/src/Shared/styles/_themes.scss
++++ b/src/Shared/styles/_themes.scss
+@@ -7,6 +7,7 @@ $light-theme: (
+     color3: rgb(7, 167, 241),
+     color4: rgb(138, 209, 241),
+     color5: rgb(0, 136, 199),
++    color6: black,
+ 
+     //.. Text
+     text-color: black,
+diff --git a/src/Shared/styles/default/_text.scss b/src/Shared/styles/default/_text.scss
+index c0eb9fe..3c807c9 100644
+--- a/src/Shared/styles/default/_text.scss
++++ b/src/Shared/styles/default/_text.scss
+@@ -6,6 +6,7 @@ $font-size2: 1.75rem;
+ $font-size3: 1.5rem;
+ $font-size4: 1.25rem;
+ $font-size5: 1rem;
++$font-size5-25: 0.95rem;
+ $font-size5-5: 0.875rem;
+ $font-size6: 0.75rem;
+ $font-size6-5: 0.625rem;
+diff --git a/src/Shared/styles/default/_transition-time.scss b/src/Shared/styles/default/_transition-time.scss
+index 90a9fe1..4cf5b28 100644
+--- a/src/Shared/styles/default/_transition-time.scss
++++ b/src/Shared/styles/default/_transition-time.scss
+@@ -1 +1,2 @@
+-$transition-time: 0.15s;
 \ No newline at end of file
-diff --git a/src/Shared/types/Data/title.ts b/src/Shared/types/Data/title.ts
-index 9ec0a3e..64686e2 100644
---- a/src/Shared/types/Data/title.ts
-+++ b/src/Shared/types/Data/title.ts
-@@ -6,8 +6,8 @@ export type chapterTranslation = {
-     scanGroupName: string,
-     languageId: number
- }
--export type chapter = { 
--    id: number, 
-+export type chapter = {
-+    id: number,
-     number: number
-     translations: chapterTranslation[]
- }
-@@ -19,7 +19,7 @@ type titlebase = {
-     synopsis: string
-     publicationDate: string
-     img: string
++$transition-time: 0.15s;
++$fast-transition-time: 0.09s;
+\ No newline at end of file
+diff --git a/src/config/Components/title.ts b/src/config/Components/title.ts
+index 6b7a121..a4d1541 100644
+--- a/src/config/Components/title.ts
++++ b/src/config/Components/title.ts
+@@ -80,10 +80,13 @@ const grid: titlegrid = {
+     card: {
+         columns: 2,
+     },
 -    
+     latestupdates: {
+         columns: 2,
+-    }
++    },
++    fasttitles: {
++        columns: 1,
++    },
 +
-     createdAt: string
- 
-     status: string
-@@ -27,6 +27,12 @@ type titlebase = {
-     demographic: string
  }
  
-+export type fasttitle = {
-+    id: number
-+    name: string
-+    img: string
-+    alternativenames?: alternativename[]
-+}
- export type titlecompact = titlebase
- 
- export type title = titlebase & {
+ export { metanames, grid };
+\ No newline at end of file

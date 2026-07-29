@@ -70,13 +70,13 @@ export function useFormController(config: config) {
         await handleSubmit(InputsController.data)
     }
 
-    //.. Automatically calls handleSubmit ~1s after the user stops changing inputs
+    //.. Automatically calls handleSubmit ~0.5s after the user stops changing inputs
     useEffect(() => {
         if (!submitOnChange) return
-        //.. Debounces the automatic submit by 1s so it only fires after the user stops typing
+        //.. Debounces the automatic submit by 0.5s so it only fires after the user stops typing
         const timeout = setTimeout(() => {
             handleSubmit(data)
-        }, 1000)
+        }, 500)
         return () => clearTimeout(timeout)
     }, [data])
 

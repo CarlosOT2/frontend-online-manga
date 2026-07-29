@@ -9,8 +9,9 @@ import { staticMapper } from '../../../Shared/utils/staticHandler'
 //# Templates //
 import { createTitle } from '../../../Shared/templates/title'
 import { createLatestUpdate } from '../../../Shared/templates/latestupdate'
+import { createFastTitle } from '../../../Shared/templates/fasttitle'
 //# Types //
-import { title, titlecompact } from '../../../Shared/types/Data/title'
+import { fasttitle, title, titlecompact } from '../../../Shared/types/Data/title'
 import { latestupdate } from '../../../Shared/types/Data/latestupdates'
 //# Config //
 import { grid } from '../../../config/Components/title'
@@ -22,17 +23,20 @@ type TitlesGrid =
     | { variant: 'compact'; data?: titlecompact[] }
     | { variant: 'latestupdates'; data?: latestupdate[] }
     | { variant: 'latestupdatescompact'; data?: latestupdate[] }
+    | { variant: 'fasttitles'; data?: fasttitle[] }
 
 type TitleItemCompactProps = { variant: 'compact'; title: titlecompact; isLoading: boolean }
 type TitleItemCardProps = { variant: 'card'; title: title; isLoading: boolean }
 type TitleItemLatestProps = { variant: 'latestupdates', title: latestupdate, isLoading: boolean }
 type TitleItemLatestCompactProps = { variant: 'latestupdatescompact', title: latestupdate, isLoading: boolean }
+type TitleItemFastTitlesProps = { variant: 'fasttitles', title: fasttitle, isLoading: boolean }
 
 type TitleInfoProps =
     | TitleItemCardProps
     | TitleItemCompactProps
     | TitleItemLatestProps
     | TitleItemLatestCompactProps
+    | TitleItemFastTitlesProps
 
 // Column-based grid: used by 'compact' and 'latestupdatescompact', which share
 // the exact same structure (chunkArray + Array.from(columns).map)
@@ -135,9 +139,16 @@ function TitleInfo({ title, variant, isLoading }: TitleInfoProps) {
                             </Text>
                         </section>
                         :
-                        <>
-                            INVALID VARIANT 'TitleInfo'
-                        </>
+                        variant === 'fasttitles' ?
+                            <section className='titlegrid__item-info-container'>
+                                <Text not_exceed_X={true} className={`titlegrid__item-name`} tag={'h3'}>
+                                    {title.name}
+                                </Text>
+                            </section>
+                            :
+                            <>
+                                INVALID VARIANT 'TitleInfo'
+                            </>
     )
 }
 function TitleArticle({ to, alt, children, src }: { to: string; alt: string; children: React.ReactNode, src: string }) {
@@ -153,6 +164,16 @@ function TitleArticle({ to, alt, children, src }: { to: string; alt: string; chi
                 {children}
             </article>
         </Link>
+    )
+}
+
+function TitleItemFast({ title, variant, isLoading }: TitleItemFastTitlesProps) {
+    return (
+        <li key={title.id}>
+            <TitleArticle to={`/title/${title.id}/${title.name}`} alt={`Cover of ${title.name}`} src={title.img}>
+                <TitleInfo title={title} variant={variant} isLoading={isLoading} />
+            </TitleArticle>
+        </li>
     )
 }
 function TitleItemLatest({ title, variant, isLoading }: TitleItemLatestProps | TitleItemLatestCompactProps) {
@@ -266,6 +287,23 @@ export default function TitlesGrid({
                     frmtdData.map((title) =>
                         <TitleItemLatest
                             key={title.chapterTranslationId}
+                            title={title}
+                            variant={variant}
+                            isLoading={isLoading}
+                        />
+                    )
+                }
+            </ul>
+        )
+    }
+    else if (variant === "fasttitles") {
+        const frmtdData = data !== undefined ? data : Array.from({ length: 5 }, createFastTitle)
+        return (
+            <ul className={wrapperClass} style={wrapperStyle}>
+                {
+                    frmtdData.map((title) =>
+                        <TitleItemFast
+                            key={title.id}
                             title={title}
                             variant={variant}
                             isLoading={isLoading}
