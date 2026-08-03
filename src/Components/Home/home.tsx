@@ -3,9 +3,6 @@ import Popular from './popular'
 import LatestUpdates from './latestupdates'
 import RecentlAdded from './recentlyadded'
 import Text from '../Global/text'
-//# Classes //
-import './home.scss'
-
 
 
 export default function Home() {
