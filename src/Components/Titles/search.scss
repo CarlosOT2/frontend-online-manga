@@ -82,7 +82,7 @@
         display: grid;
         grid-template-columns: repeat(4, 1fr);
 
-        width: 100%;
+        width: layout.$layout-default-width;
         height: fit-content;
 
         gap: 3%;
@@ -90,7 +90,7 @@
 
         margin-top: 20px;
 
-        width: layout.$layout-default-width;
+        
 
         &-button {
             @include input.input-style;
@@ -98,7 +98,7 @@
             display: flex;
             align-items: center;
 
-            width: 100%;
+            width: calc(layout.$layout-default-width / 4.5);
             height: 50%;
 
             padding-right: 6px;
@@ -113,6 +113,7 @@
                 display: flex;
                 align-items: center;
                 font-size: text.$font-size5;
+                white-space: nowrap;
             }
         }
 

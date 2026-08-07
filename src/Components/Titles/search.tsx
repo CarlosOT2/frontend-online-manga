@@ -15,6 +15,7 @@ import { GetTitlesByFilters, GetRecentlyAddedTitles } from '../../Shared/api/Fet
 import { GetAllStatic } from '../../Shared/api/FetchStatic'
 //# Utils //
 import { useFormController } from '../../Shared/form/FormController'
+import { useQueryController } from '../../Shared/form/QueryController'
 //# Types //
 import { staticData, staticDataArray } from '../../Shared/types/Data/static'
 import { title } from '../../Shared/types/Data/title'
@@ -34,6 +35,7 @@ type state = {
 
 type Faceted = {
     type: 'faceted';
+    inputname: { [key: string]: string };
     label: string;
     options: Record<string, staticData[]>;
     state: state;
@@ -43,6 +45,7 @@ type Faceted = {
 type MultiDropDown = {
     type: 'multidropdown';
     label: string;
+    inputname: string;
     options: staticData[];
     state: state;
     InputsController: InputsController;
@@ -51,6 +54,7 @@ type MultiDropDown = {
 type SelectText = {
     type: 'selecttext';
     label: string;
+    inputname: string;
     options?: undefined;
     state: state;
     InputsController: InputsController;
@@ -59,20 +63,20 @@ type SelectText = {
 type SearchNumber = {
     type: 'searchnumber';
     label: string;
+    inputname: string;
     options?: undefined;
     state: state;
     InputsController: InputsController;
 }
 
 //.. Local Components //
-function FilterItem({ type, label, options, state, InputsController }: Faceted | MultiDropDown | SelectText | SearchNumber) {
+function FilterItem({ type, label, options, state, inputname, InputsController }: Faceted | MultiDropDown | SelectText | SearchNumber) {
     const id = `label_${useId()}`
 
     const { showFilterItem, setShowFilterItem } = state
 
     // Default suffix used to access exclusion InputsData
     const excludeTextString = 'exclude'
-    const InputName = `search${label.replace(/\s+/g, '').replace(/^./, c => c.toUpperCase())}`
 
     return (
         <>
@@ -100,7 +104,7 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
 
 
                                 // MultiDropDown
-                                const mddValue = InputsController.data[InputName];
+                                const mddValue = InputsController.data[inputname as string];
                                 if (Array.isArray(mddValue) && mddValue.length > 0 && Array.isArray(options)) {
                                     return mddValue
                                         .map(v => options.find((obj: staticData) => obj.id === Number(v))?.name)
@@ -108,17 +112,16 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                 }
 
                                 // SelectText & SelectNumber
-                                const slctValue = InputsController.data[InputName];
+                                const slctValue = InputsController.data[inputname as string];
                                 if ((typeof slctValue === "string" || typeof slctValue === "number") && !options) {
                                     return slctValue.toString() || "None";
                                 }
 
                                 // Faceted
-
                                 if (isPlainObject(options) && Object.values(options).every(Array.isArray)) {
-
                                     const optionsKeys = Object.keys(options);
                                     const staticKeys = getAllStaticKeys()
+                                    const facetedInputname = inputname as { [key: string]: string }
 
                                     const values = optionsKeys.flatMap((key) => {
                                         const frmtdKey = key.toLowerCase() as keyof staticDataArray
@@ -128,15 +131,11 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                             return []
                                         }
 
-                                        const keyValues = InputsController.data[`${InputName}_${key}`] ?? []
-                                        const keyExcludeValues = InputsController.data[`${InputName}_${key}_${excludeTextString}`] ?? []
+                                        const keyValues = InputsController.data[`${facetedInputname[key]}`] ?? []
 
                                         return [
                                             ...keyValues.map((value: string) =>
                                                 staticMapper(frmtdKey, Number(value))
-                                            ),
-                                            ...keyExcludeValues.map((value: string) =>
-                                                `NOT ${staticMapper(frmtdKey, Number(value))}`
                                             )
                                         ]
                                     })
@@ -170,8 +169,8 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
 
                                         <ul>
                                             {value.map(function (option) {
-                                                const dataIncludeKey = `${InputName}_${key}`
-                                                const dataExcludeKey = `${InputName}_${key}_${excludeTextString}`
+                                                const dataIncludeKey = `${(inputname as { [key: string]: string })[key]}`
+                                                const dataExcludeKey = `${excludeTextString}${(inputname as { [key: string]: string })[key]}`
 
                                                 const isInclude = (InputsController.data[dataIncludeKey] ?? []).includes(String(option.id))
                                                 const isExclude = (InputsController.data[dataExcludeKey] ?? []).includes(String(option.id))
@@ -193,7 +192,7 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                                                 }
                                                                 `
                                                             }
-                                                            name={`${InputName}_${key}`}
+                                                            name={`${inputname}_${key}`}
                                                             onClick={() => {
                                                                 const filterById = (list: string[], id: number) =>
                                                                     (list ?? []).filter((item) => Number(item) !== id)
@@ -231,7 +230,7 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                                     <CheckBoxInput
                                                         value={option.id}
                                                         label={option.name}
-                                                        name={`${InputName}`}
+                                                        name={`${inputname}`}
                                                         InputsController={InputsController}
                                                     />
                                                 </li>
@@ -244,7 +243,7 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                                 type='text'
                                                 className='search__filters-item__options__input'
                                                 Icon={HiMiniMagnifyingGlass}
-                                                name={InputName}
+                                                name={inputname}
                                                 autoComplete='off'
                                                 InputsController={InputsController}
                                             />
@@ -254,7 +253,7 @@ function FilterItem({ type, label, options, state, InputsController }: Faceted |
                                                 <Input
                                                     type='number'
                                                     className='search__filters-item__options__input'
-                                                    name={InputName}
+                                                    name={inputname}
                                                     autoComplete='off'
                                                     InputsController={InputsController}
                                                 />
@@ -274,60 +273,47 @@ export default function Search() {
     const { InputsController, SubmitController } = useFormController({
         handleSubmit: handleSubmit
     })
+    const QueryController = useQueryController(InputsController)
 
     const [data, setData] = useState<title[]>()
-    const [staticData, setStaticData] = useState<staticDataArray>({})
+    const [staticData, setStaticData] = useState<staticDataArray>({} as staticDataArray)
 
     const [showFilterItem, setShowFilterItem] = useState<string | null>(null)
     const [showFilters, setShowFilters] = useState(false)
 
     async function handleSubmit(data: {
-        searchName: string,
-        searchAuthor: string,
-        searchArtist: string,
+        name: string,
+        author: string,
+        artist: string,
 
-        searchContentRating: string[],
-        searchDemographic: string[],
-        searchStatus: string[],
-        searchPublicationYear: string,
+        contentRatingIds: string[],
+        demographicIds: string[],
+        statusIds: string[],
+        publicationYear: string,
 
-        searchTags_Genres: string[],
-        searchTags_Themes: string[],
+        genresIds: string[],
+        themesIds: string[],
 
-        searchTags_Genres_exclude: string[],
-        searchTags_Themes_exclude: string[]
+        excludeGenresIds: string[],
+        excludeThemesIds: string[]
     }) {
-        const res = await GetTitlesByFilters({
-            name: data.searchName,
-            author: data.searchAuthor,
-            artist: data.searchArtist,
-
-            contentRatingIds: data.searchContentRating,
-            demographicIds: data.searchDemographic,
-            statusIds: data.searchStatus,
-            publicationYear: data.searchPublicationYear,
-
-            genresIds: data.searchTags_Genres,
-            themesIds: data.searchTags_Themes,
-
-            excludeGenresIds: data.searchTags_Genres_exclude,
-            excludeThemesIds: data.searchTags_Themes_exclude
-        })
-
-        if (res) setData(res)
+        QueryController.handleSubmit(data)
     }
 
-    
+
     //.. Get static data from the database
     useEffect(() => {
         GetAllStatic().then(setStaticData)
     }, [])
-    
-    //.. Loads the initial list of titles when the page opens/reload
-    useEffect(() => {
-        GetRecentlyAddedTitles(99, false).then(setData)
-    }, [])
 
+    //.. Loads the initial list of titles when the page opens/reload 
+    //.. Re-fetches results whenever the URL query string changes
+    useEffect(() => {
+        const query = QueryController.params.toString()
+        GetTitlesByFilters(query).then(res => {
+            if (res) setData(res)
+        })
+    }, [QueryController.params])
 
     //.. Resets the selected filter tab
     useEffect(() => {
@@ -345,7 +331,7 @@ export default function Search() {
                         type='text'
                         className='search__form-inputs__input'
                         Icon={HiMiniMagnifyingGlass}
-                        name='searchName'
+                        name='name'
                         autoComplete='off'
                         InputsController={InputsController}
                     />
@@ -373,13 +359,15 @@ export default function Search() {
                         <section className='search__filters'>
                             <FilterItem
                                 type={"faceted"}
+                                inputname={{ themes: "ThemesIds", genres: "GenresIds" }}
                                 label="Tags"
-                                options={{ Themes: staticData.themes, Genres: staticData.genres }}
+                                options={{ themes: staticData.themes, genres: staticData.genres }}
                                 state={{ showFilterItem, setShowFilterItem }}
                                 InputsController={InputsController}
                             />
                             <FilterItem
                                 type={"multidropdown"}
+                                inputname={'contentRatingIds'}
                                 label="Content Rating"
                                 options={staticData.contentRatings}
                                 state={{ showFilterItem, setShowFilterItem }}
@@ -387,6 +375,7 @@ export default function Search() {
                             />
                             <FilterItem
                                 type={"multidropdown"}
+                                inputname={'demographicIds'}
                                 label="Demographic"
                                 options={staticData.demographics}
                                 state={{ showFilterItem, setShowFilterItem }}
@@ -394,6 +383,7 @@ export default function Search() {
                             />
                             <FilterItem
                                 type={"multidropdown"}
+                                inputname={'statusIds'}
                                 label="Status"
                                 options={staticData.statuses}
                                 state={{ showFilterItem, setShowFilterItem }}
@@ -402,18 +392,21 @@ export default function Search() {
                             <FilterItem
                                 type={"selecttext"}
                                 label="Author"
+                                inputname={'author'}
                                 state={{ showFilterItem, setShowFilterItem }}
                                 InputsController={InputsController}
                             />
                             <FilterItem
                                 type={"selecttext"}
                                 label="Artist"
+                                inputname={'artist'}
                                 state={{ showFilterItem, setShowFilterItem }}
                                 InputsController={InputsController}
                             />
                             <FilterItem
                                 type={"searchnumber"}
                                 label="Publication Year"
+                                inputname={'publicationYear'}
                                 state={{ showFilterItem, setShowFilterItem }}
                                 InputsController={InputsController}
                             />

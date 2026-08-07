@@ -1,7 +1,9 @@
+export type data = Record<string, any>
+
 export type InputsController = {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
     changeValue: (name: string, value: any) => void,
-    data: Record<string, any>
+    data: data
 }
 
 export type SubmitController = {

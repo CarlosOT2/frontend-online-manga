@@ -29,22 +29,8 @@ export async function GetTitlesByFastFilters(name: string) {
         url: `/Title/search/fast?name=${name}`
     });
 }
-export async function GetTitlesByFilters(data: {
-    name?: string,
-    author?: string,
-    artist?: string,
-
-    genresIds?: number[] | string[],
-    themesIds?: number[] | string[],
-    statusIds?: number[] | string[],
-    demographicIds?: number[] | string[],
-    contentRatingIds?: number[] | string[],
-    publicationYear?: number | string,
-
-    excludeGenresIds?: number[] | string[],
-    excludeThemesIds?: number[] | string[]
-}) {
-
+export async function GetTitlesByFilters(query: string) {
+    /*
     const params = new URLSearchParams()
     Object.entries(data).forEach(([key, value]) => {
         if (value === undefined || value === null || value === '') return
@@ -56,5 +42,6 @@ export async function GetTitlesByFilters(data: {
         }
     })
     const query = params.toString()
+    */
     return await PerformFetch<title[]>({ url: `/Title/search?${query}` })
 }

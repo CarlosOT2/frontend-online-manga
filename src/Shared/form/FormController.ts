@@ -32,7 +32,12 @@ export function useFormController(config: config) {
         data: data,
     }
 
-    //.. Updates the form data when an input changes; toggles values in an array for checkboxes, replaces the value for other input types
+    /**
+     * Updates the form data when an input changes; toggles values in
+     * an array for checkboxes, replaces the value for other input types.
+     *
+     * @param event - The input change event
+     */
     function onChange(event: React.ChangeEvent<HTMLInputElement>) {
         const { name, value, type } = event.target
 
@@ -53,17 +58,25 @@ export function useFormController(config: config) {
         }
     }
 
-    //.. Manually sets the value of a field by name, without needing an input change event
+    /**
+     * Manually sets the value of a field by name, without needing
+     * an input change event.
+     *
+     * @param name - The field name to update
+     * @param value - The new value for the field
+     */
     function changeValue(name: string, value: any) {
         setData(prev => ({ ...prev, [name]: value }))
     }
 
+    const SubmitController: SubmitController = { onSubmit: onSubmit, }
 
-    const SubmitController: SubmitController = {
-        onSubmit: onSubmit,
-    }
-
-    //.. Handles the form submit using the handleSubmit function provided to the hook
+    /**
+     * Handles the form submit using the handleSubmit function
+     * provided to the hook.
+     *
+     * @param event - The form submit event
+     */
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
