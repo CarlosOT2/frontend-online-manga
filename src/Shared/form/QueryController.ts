@@ -29,6 +29,8 @@ export function useQueryController(InputsController: InputsController) {
 
         return params.toString()
     }
+
+
     /**
      * Parses the current URL query string back into a data object,
      * grouping repeated keys into arrays.
@@ -45,27 +47,20 @@ export function useQueryController(InputsController: InputsController) {
 
         return result
     }
+
     async function handleSubmit(data: data) {
         setSearchParams(build(data))
     }
-
     //.. Syncs form data (InputsController.data) with the URL query string
     //.. whenever the URL changes (including browser back/forward navigation)
     useEffect(() => {
         const parsedData = parse()
-        const array = Object.entries(parsedData)
-        if (array.length > 0) {
-            array.forEach(([key, value]) => {
-                InputsController.changeValue(key, value)
-            })
-        } else {
-            Object.entries(InputsController.data).forEach(([key, value]) => {
-                InputsController.changeValue(
-                    key,
-                    Array.isArray(value) ? [] : ''
-                )
-            })
-        }
+        const keys = new Set([...Object.keys(InputsController.data), ...Object.keys(parsedData)])
+        keys.forEach(key => {
+            const parsedValue = parsedData[key]
+            const currentValue = InputsController.data[key]
+            InputsController.changeValue(key, parsedValue ?? (Array.isArray(currentValue) ? [] : ''))
+        })
     }, [searchParams])
 
     return { handleSubmit, params: searchParams }

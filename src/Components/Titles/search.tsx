@@ -10,7 +10,7 @@ import FilterClasses from '../../Shared/utils/FilterClasses'
 import isPlainObject from '../../Shared/utils/isPlainObject'
 import { staticMapper, getAllStaticKeys } from '../../Shared/utils/staticHandler'
 //# Api //
-import { GetTitlesByFilters, GetRecentlyAddedTitles } from '../../Shared/api/FetchTitle'
+import { GetTitlesByFilters } from '../../Shared/api/FetchTitle'
 //# Services //
 import { GetAllStatic } from '../../Shared/api/FetchStatic'
 //# Utils //
@@ -271,7 +271,7 @@ function FilterItem({ type, label, options, state, inputname, InputsController }
 
 export default function Search() {
     const { InputsController, SubmitController } = useFormController({
-        handleSubmit: handleSubmit
+        handleSubmit
     })
     const QueryController = useQueryController(InputsController)
 

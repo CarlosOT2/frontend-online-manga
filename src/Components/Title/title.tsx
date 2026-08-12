@@ -90,7 +90,7 @@ function SectionMeta({ data }: { data: title | undefined }) {
                     return item
                 }
             })
-
+            console.log(config)
             return (
                 <li className="title__meta-list__item" key={`meta_${i}`}>
                     <Text tag="h2" className="title__meta-label">
