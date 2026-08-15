@@ -4,7 +4,7 @@ import FilterClasses from '../../../Shared/utils/FilterClasses';
 import { useRef } from 'react';
 import type { IconType } from 'react-icons';
 //# Types //
-import type { InputsController } from '../../../Shared/types/FormController';
+import type { InputsController } from '@carlosot2/react-form-control';
 //# Classes //
 import './input.scss';
 

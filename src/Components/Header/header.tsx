@@ -8,13 +8,12 @@ import Text from '../Global/text'
 import { useLocation } from 'react-router'
 import { useWindowScroll } from 'react-use'
 import { useRef, useEffect } from 'react'
-import { useFormController } from '../../Shared/form/FormController'
+import { useFormController } from '@carlosot2/react-form-control'
 import { useState } from 'react'
 //# Classes //
 import './header.scss'
 //# Icons //
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { IoPersonSharp } from "react-icons/io5";
 import { GetTitlesByFastFilters } from '../../Shared/api/FetchTitle'
 import { fasttitle } from '../../Shared/types/Data/title'
 
@@ -153,10 +152,6 @@ export default function Header() {
                                 </section>
                             }
                         </section>
-
-                        <Link className='header__actions__login' >
-                            <IoPersonSharp />
-                        </Link>
                     </section>
                 </div>
             </header>

@@ -14,12 +14,11 @@ import { GetTitlesByFilters } from '../../Shared/api/FetchTitle'
 //# Services //
 import { GetAllStatic } from '../../Shared/api/FetchStatic'
 //# Utils //
-import { useFormController } from '../../Shared/form/FormController'
-import { useQueryController } from '../../Shared/form/QueryController'
+import { useFormController } from '@carlosot2/react-form-control'
 //# Types //
 import { staticData, staticDataArray } from '../../Shared/types/Data/static'
 import { title } from '../../Shared/types/Data/title'
-import type { InputsController } from '../../Shared/types/FormController'
+import type { InputsController } from '@carlosot2/react-form-control'
 //# Classes //
 import './search.scss'
 //# Icons //
@@ -271,49 +270,24 @@ function FilterItem({ type, label, options, state, inputname, InputsController }
 
 export default function Search() {
     const { InputsController, SubmitController } = useFormController({
-        handleSubmit
+        queryControl: true,
+        handleQueryChange
     })
-    const QueryController = useQueryController(InputsController)
-
     const [data, setData] = useState<title[]>()
     const [staticData, setStaticData] = useState<staticDataArray>({} as staticDataArray)
 
     const [showFilterItem, setShowFilterItem] = useState<string | null>(null)
     const [showFilters, setShowFilters] = useState(false)
 
-    async function handleSubmit(data: {
-        name: string,
-        author: string,
-        artist: string,
-
-        contentRatingIds: string[],
-        demographicIds: string[],
-        statusIds: string[],
-        publicationYear: string,
-
-        genresIds: string[],
-        themesIds: string[],
-
-        excludeGenresIds: string[],
-        excludeThemesIds: string[]
-    }) {
-        QueryController.handleSubmit(data)
+    async function handleQueryChange(query: string) {
+        await GetTitlesByFilters(query).then(res => {
+            if (res) setData(res)
+        })
     }
-
-
     //.. Get static data from the database
     useEffect(() => {
         GetAllStatic().then(setStaticData)
     }, [])
-
-    //.. Loads the initial list of titles when the page opens/reload 
-    //.. Re-fetches results whenever the URL query string changes
-    useEffect(() => {
-        const query = QueryController.params.toString()
-        GetTitlesByFilters(query).then(res => {
-            if (res) setData(res)
-        })
-    }, [QueryController.params])
 
     //.. Resets the selected filter tab
     useEffect(() => {

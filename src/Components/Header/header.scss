@@ -112,19 +112,6 @@
             transition: opacity transition-time.$fast-transition-time ease;
         }
 
-        &__login {
-            border-radius: 10rem;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-evenly;
-
-            svg {
-                width: 30px;
-                height: 30px;
-            }
-        }
-
         &__fast-search {
             position: relative;
 

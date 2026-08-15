@@ -3,7 +3,7 @@ import Text from '../text'
 //# Utils //
 import FilterClasses from '../../../Shared/utils/FilterClasses';
 //# Types //
-import type { InputsController } from '../../../Shared/types/FormController'
+import type { InputsController } from '@carlosot2/react-form-control'
 //# Classes //
 import './radioinput.scss'
 
