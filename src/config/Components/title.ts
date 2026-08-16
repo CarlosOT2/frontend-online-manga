@@ -2,7 +2,7 @@
 import { titlemetakeys } from '../../Shared/types/Data/title'
 import { staticDataArray } from '../../Shared/types/Data/static'
 
-type titlemetanames = Record<titlemetakeys, { metaname: string; statickey?: keyof staticDataArray }>
+type titlemetanames = Record<titlemetakeys, { metaname: string; statickey?: keyof staticDataArray, querykey: string }>
 type titlegrid = { [keyof: string]: { columns: number, items?: number } }
 
 /**
@@ -28,33 +28,41 @@ type titlegrid = { [keyof: string]: { columns: number, items?: number } }
  */
 const metanames: titlemetanames = {
     authors: {
-        metaname: 'Author'
+        metaname: 'Author',
+        querykey: "author"
     },
     artists: {
-        metaname: 'Artist'
+        metaname: 'Artist',
+        querykey: "artist"
     },
     genres: {
         metaname: 'Genre',
-        statickey: 'genres'
+        statickey: 'genres',
+        querykey: "GenresIds"
     },
     themes: {
         metaname: "Theme",
-        statickey: 'themes'
+        statickey: 'themes',
+        querykey: "ThemesIds"
     },
     contentRating: {
         metaname: "Content Rating",
-        statickey: "contentRatings"
+        statickey: "contentRatings",
+        querykey: "contentRatingIds"
     },
     demographic: {
         metaname: "Demographic",
-        statickey: "demographics"
+        statickey: "demographics",
+        querykey: "demographicIds"
     },
     status: {
         metaname: "Status",
-        statickey: "statuses"
+        statickey: "statuses",
+        querykey: "statusIds"
     },
     publicationDate: {
-        metaname: "Publication Date"
+        metaname: "Publication Date",
+        querykey: "publicationYear"
     }
 };
 

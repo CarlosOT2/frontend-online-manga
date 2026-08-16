@@ -2,6 +2,7 @@
 import Text from '../Global/text'
 import Button from '../Global/Inputs/button'
 import Img from '../Global/img'
+import Link from '../Global/link'
 //# Libs //
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
@@ -20,7 +21,6 @@ import { metanames } from '../../config/Components/title'
 //# Classes //
 import './title.scss'
 //# Icons //
-import { FaStar } from "react-icons/fa"
 import { IoBook } from "react-icons/io5"
 import { MdOutlineGroup } from "react-icons/md";
 import { IoEyeOutline } from "react-icons/io5";
@@ -29,14 +29,9 @@ import { IoEyeOutline } from "react-icons/io5";
 function Buttons() {
     return (
         <section className='title__header-button-container' role='group'>
-            <Button className='title__header-button' icon={<FaStar className='title__header-button-icon' />}>
-                <Text className='title__header-button-txt' tag='span' no_select={true}>
-                    Favorite
-                </Text>
-            </Button>
             <Button className='title__header-button' icon={<IoBook className='title__header-button-icon' />}>
                 <Text className='title__header-button-txt' tag='span' no_select={true}>
-                    Read
+                    Start Reading
                 </Text>
             </Button>
         </section>
@@ -54,13 +49,15 @@ function SectionMeta({ data }: { data: title | undefined }) {
         name: string,
         data: metadata,
         statickey?: keyof staticDataArray
+        querykey: string
     }
     const config: groupconfig[] =
         (Object.entries(metanames) as [titlemetakeys, typeof metanames[titlemetakeys]][])
             .map(([key, value]) => ({
                 name: value.metaname,
                 data: data[key],
-                statickey: value.statickey
+                statickey: value.statickey,
+                querykey: value.querykey
             }));
 
     /*
@@ -80,17 +77,26 @@ function SectionMeta({ data }: { data: title | undefined }) {
             const name = (obj.data && Array.isArray(obj.data) && obj.data.length > 1)
                 ? `${obj.name}s`
                 : obj.name;
-            const formattedData = formatData(obj.data).map(item => {
+            const formattedData = formatData(obj.data).map(raw => {
+                let formatted = raw
+
                 if (obj.statickey) {
-                    return staticMapper(obj.statickey, Number(item))
+                    formatted = staticMapper(obj.statickey, Number(raw))
                 }
-                else if (isDate(item)) {
-                    return formatDate(item)
-                } else {
-                    return item
+                else if (isDate(raw)) {
+                    formatted = formatDate(raw)
+                }
+
+                return {
+                    raw,
+                    formatted
                 }
             })
-            console.log(config)
+
+
+
+
+
             return (
                 <li className="title__meta-list__item" key={`meta_${i}`}>
                     <Text tag="h2" className="title__meta-label">
@@ -98,13 +104,22 @@ function SectionMeta({ data }: { data: title | undefined }) {
                     </Text>
                     <ul className="title__meta-inner-list">
                         {
-                            formattedData.map((data, data_i) => (
-                                <li key={`data_${data_i}`} className='title__meta-inner-list__item'>
-                                    <Text tag="span" className='title__meta-inner-list__text'>
-                                        {data}
-                                    </Text>
-                                </li>
-                            ))
+                            formattedData.map((item, item_i) => {
+                                let query: string = isDate(item.raw) && item.raw !== undefined
+                                    ? `${obj.querykey}=${new Date(item.raw).getFullYear()}`
+                                    : `${obj.querykey}=${item.raw}`
+
+
+                                return (
+                                    <li key={`data_${item_i}`} className='title__meta-inner-list__item'>
+                                        <Link to={`/titles/search?${query}`}>
+                                            <Text tag="span" className='title__meta-inner-list__text'>
+                                                {item.formatted}
+                                            </Text>
+                                        </Link>
+                                    </li>
+                                )
+                            })
                         }
                     </ul>
                 </li>
@@ -212,7 +227,6 @@ export default function Title() {
 
     //.. States
     const [data, setData] = useState<title>()
-
     async function req() {
         const res = await GetTitleById(Number(id))
         if (res) setData(res[0])

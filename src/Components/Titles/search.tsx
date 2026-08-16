@@ -111,7 +111,9 @@ function FilterItem({ type, label, options, state, inputname, InputsController }
                                 }
 
                                 // SelectText & SelectNumber
-                                const slctValue = InputsController.data[inputname as string];
+                                const slctValue = Array.isArray(InputsController.data[inputname as string])
+                                    ? InputsController.data[inputname as string][0]
+                                    : undefined
                                 if ((typeof slctValue === "string" || typeof slctValue === "number") && !options) {
                                     return slctValue.toString() || "None";
                                 }
