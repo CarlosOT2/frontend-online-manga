@@ -6,7 +6,7 @@ import Link from '../Global/link'
 //# Libs //
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-//# Services //
+//# Api //
 import { GetTitleById } from '../../Shared/api/FetchTitle'
 //# Utils //
 import { staticMapper } from '../../Shared/utils/staticHandler'
@@ -71,7 +71,6 @@ function SectionMeta({ data }: { data: title | undefined }) {
         }
         return [raw]
     }
-
     function Groups({ config }: { config: groupconfig[] }) {
         return config.map((obj, i) => {
             const name = (obj.data && Array.isArray(obj.data) && obj.data.length > 1)
@@ -173,37 +172,38 @@ function SectionChapters({ data }: { data: title | undefined }) {
                         {open
                             &&
                             <ul className='title__chapters-list--translations'>
-                                {chapter.translations.map((chapterTranslation: chapterTranslation, index) => (
-                                    <li
-                                        key={index}
-                                        className='title__chapters-list__item--translations'
-                                        style={index === 4 ? { borderBottom: "0", paddingBottom: "0" } : undefined}
-                                    >
-                                        <div className='title__chapters-list__item--translations__top'>
-                                            <Img
-                                                src={`/flags/${staticMapper('languages', chapterTranslation.languageId)}.svg`}
-                                                className="title__chapters-list__item-img"
-                                                noPreview={true}
-                                            />
-                                            <Text tag='span' className='title__chapters-list__item-title' not_exceed_X={true}>
-                                                {chapterTranslation.chapterTitle}
-                                            </Text>
-                                            <IoEyeOutline className='title__chapters-list__item-view-icon' />
-                                            <Text tag='span' className='title__chapters-list__item-view'>
-                                                {chapterTranslation.viewCount}
-                                            </Text>
-                                        </div>
-                                        <div className='title__chapters-list__item--translations__bottom'>
-                                            <MdOutlineGroup className='title__chapters-list__item-scan-icon' />
-                                            <Text tag='span' className='title__chapters-list__item-scan' not_exceed_X={true}>
-                                                {chapterTranslation.scanGroupName}
-                                            </Text>
-                                            <Text tag='span' className='title__chapters-list__item-upload'>
-                                                {timeAgo(chapterTranslation.uploadedAt)}
-                                            </Text>
-                                        </div>
-                                    </li>
-                                ))}
+                                {chapter.translations.map((chapterTranslation: chapterTranslation, index) => {
+                                    return (
+                                        <li key={index} className='title__chapters-list__item--translations'>
+                                            <Link to={`/title/${data?.id}/${data?.name}/chaptertranslation/${chapterTranslation.id}`}>
+                                                <div className='title__chapters-list__item--translations__top'>
+                                                    <Img
+                                                        src={`/flags/${staticMapper('languages', chapterTranslation.languageId)}.svg`}
+                                                        className="title__chapters-list__item-img"
+                                                        noPreview={true}
+                                                    />
+                                                    <Text tag='span' className='title__chapters-list__item-title' not_exceed_X={true}>
+                                                        {chapterTranslation.chapterTitle}
+                                                    </Text>
+                                                    <IoEyeOutline className='title__chapters-list__item-view-icon' />
+                                                    <Text tag='span' className='title__chapters-list__item-view'>
+                                                        {chapterTranslation.viewCount}
+                                                    </Text>
+                                                </div>
+
+                                                <div className='title__chapters-list__item--translations__bottom'>
+                                                    <MdOutlineGroup className='title__chapters-list__item-scan-icon' />
+                                                    <Text tag='span' className='title__chapters-list__item-scan' not_exceed_X={true}>
+                                                        {chapterTranslation.scanGroupName}
+                                                    </Text>
+                                                    <Text tag='span' className='title__chapters-list__item-upload'>
+                                                        {timeAgo(chapterTranslation.uploadedAt)}
+                                                    </Text>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         }
                     </li>
@@ -221,20 +221,20 @@ function SectionChapters({ data }: { data: title | undefined }) {
 }
 
 export default function Title() {
-
+    
     //.. Variables
-    const { id } = useParams();
+    const { titleId } = useParams();
 
     //.. States
     const [data, setData] = useState<title>()
     async function req() {
-        const res = await GetTitleById(Number(id))
+        const res = await GetTitleById(Number(titleId))
         if (res) setData(res[0])
     }
 
     useEffect(() => {
         req()
-    }, [id])
+    }, [titleId])
 
     return (
         <>
@@ -266,7 +266,7 @@ export default function Title() {
                                 {data?.authors.join(", ")}
                             </Text>
                         </section>
-                        <Buttons />
+                        <Buttons/>
                     </section>
                 </header>
                 <article className={'title__content'}>

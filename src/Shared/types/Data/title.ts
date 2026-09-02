@@ -6,6 +6,7 @@ export type chapterTranslation = {
     scanGroupName: string,
     languageId: number
 }
+
 export type chapter = {
     id: number,
     number: number

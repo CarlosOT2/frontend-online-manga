@@ -9,6 +9,8 @@ import Search from './Components/Titles/search'
 import LatestUpdates from './Components/Titles/latestupdates'
 import RecentlyAdded from './Components/Titles/recentlyadded'
 
+import ChapterTranslation from './Components/ChapterTranslation/chaptertranslation'
+
 //# Libs //
 import { Routes, Route } from 'react-router'
 import { useEffect } from 'react'
@@ -44,9 +46,10 @@ export default function App() {
             <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/title/:id/:name" element={<Title />} />
-                    <Route path="/titles/" element={<Title />} />
+                    <Route path="/title/:titleId/:titleName" element={<Title />} />
+                    <Route path="/title/:titleId/:titleName/chaptertranslation/:chapterTranslationId" element={<ChapterTranslation />} />
 
+                    <Route path="/titles/" element={<Title />} />
                     <Route path="/titles" element={<TitlesWrapper titles={TitlesWrapperText} />}>
                         <Route path="search" element={<Search />} />
                         <Route path="recentlyadded" element={<RecentlyAdded />} />
