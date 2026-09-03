@@ -70,8 +70,10 @@ export default function Header() {
 
     return (
         <>
-            <header className={`header ${location.pathname === "/" && y === 0 ? 'header--home' : ''}`}>
-
+            <header className={`
+                header 
+                ${location.pathname === "/" && y === 0 ? 'header--home' : ''}
+                `}>
                 <div className={`header__container`}>
                     <nav className={`header__nav`}>
                         <ul>

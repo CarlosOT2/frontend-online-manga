@@ -1,0 +1,49 @@
+//# Uses //
+@use '../../Shared/styles/default/header' as header;
+@use '../../Shared/styles/default/layout' as layout;
+
+.chaptertranslation {
+
+
+    &__pages {
+        display: flex;
+        justify-content: center;
+
+        width: layout.$layout-default-width;
+
+        padding-top: 25px;
+        padding-bottom: 25px;
+
+        margin: auto;
+
+        &__container {
+            position: relative;
+            width: 60%;
+        }
+
+        &__img {
+            width: 100%;
+        }
+
+        &__button {
+            position: absolute;
+            top: 0;
+
+            height: 100%;
+            width: 40%;
+
+            opacity: 0;
+            cursor: pointer;
+
+            &--left {
+                @extend .chaptertranslation__pages__button;
+                left: 0
+            }
+
+            &--right {
+                @extend .chaptertranslation__pages__button;
+                right: 0;
+            }
+        }
+    }
+}

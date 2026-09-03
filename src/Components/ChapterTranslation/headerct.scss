@@ -1,0 +1,13 @@
+//# Uses //
+@use '../../Shared/styles/default/header' as header;
+@use '../../Shared/styles/default/layout' as layout;
+
+.headerct {
+    position: fixed;
+    top: 0;
+
+    width: 100%;
+    height: header.$height-size;
+    background-color: color-mix(in srgb, var(--color1) 75%, transparent);
+    z-index: 1;
+}

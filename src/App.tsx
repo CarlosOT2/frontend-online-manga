@@ -12,7 +12,7 @@ import RecentlyAdded from './Components/Titles/recentlyadded'
 import ChapterTranslation from './Components/ChapterTranslation/chaptertranslation'
 
 //# Libs //
-import { Routes, Route } from 'react-router'
+import { Routes, Route, useMatch } from 'react-router'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 //# Classes //
@@ -39,10 +39,13 @@ function ScrollToTop() {
 }
 
 export default function App() {
+    const isChapterTranslation = useMatch("/title/:titleId/:titleName/chaptertranslation/:chapterTranslationId")
     return (
         <>
             <ScrollToTop />
-            <Header />
+
+            {!isChapterTranslation && <Header />}
+
             <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
