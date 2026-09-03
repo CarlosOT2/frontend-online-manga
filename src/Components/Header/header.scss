@@ -155,7 +155,8 @@
     }
 
     &--chaptertranslation {
-        display: none;
+        position: absolute;
+        border-bottom: none;
     }
 
     &--home {

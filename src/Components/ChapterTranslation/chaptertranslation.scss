@@ -3,22 +3,18 @@
 @use '../../Shared/styles/default/layout' as layout;
 
 .chaptertranslation {
-
-
     &__pages {
         display: flex;
         justify-content: center;
 
         width: layout.$layout-default-width;
 
-        padding-top: 25px;
-        padding-bottom: 25px;
-
+        padding-top: 10px;
         margin: auto;
 
         &__container {
             position: relative;
-            width: 60%;
+            width: 52.8%;
         }
 
         &__img {
@@ -32,7 +28,10 @@
             height: 100%;
             width: 40%;
 
+            margin: 0;
+            padding: 0;
             opacity: 0;
+            border: none;
             cursor: pointer;
 
             &--left {

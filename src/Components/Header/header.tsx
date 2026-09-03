@@ -73,6 +73,7 @@ export default function Header() {
             <header className={`
                 header 
                 ${location.pathname === "/" && y === 0 ? 'header--home' : ''}
+                ${location.pathname.includes("chaptertranslation") ? 'header--chaptertranslation' : ''}
                 `}>
                 <div className={`header__container`}>
                     <nav className={`header__nav`}>

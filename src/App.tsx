@@ -39,12 +39,11 @@ function ScrollToTop() {
 }
 
 export default function App() {
-    const isChapterTranslation = useMatch("/title/:titleId/:titleName/chaptertranslation/:chapterTranslationId")
     return (
         <>
             <ScrollToTop />
 
-            {!isChapterTranslation && <Header />}
+            <Header />
 
             <main>
                 <Routes>
