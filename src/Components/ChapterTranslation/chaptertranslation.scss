@@ -8,13 +8,18 @@
         justify-content: center;
 
         width: layout.$layout-default-width;
+        height: 100vh;
 
-        padding-top: 10px;
         margin: auto;
 
         &__container {
             position: relative;
+
+            display: flex;
+            align-items: center;
+
             width: 52.8%;
+            height: 100%;
         }
 
         &__img {
@@ -26,7 +31,8 @@
             top: 0;
 
             height: 100%;
-            width: 40%;
+
+            background-color: red;
 
             margin: 0;
             padding: 0;
@@ -34,13 +40,23 @@
             border: none;
             cursor: pointer;
 
+
             &--left {
                 @extend .chaptertranslation__pages__button;
-                left: 0
+                width: 32.5%;
+                left: 0;
+            }
+
+            &--center {
+                @extend .chaptertranslation__pages__button;
+                width: 35%;
+                left: 50%;
+                transform: translateX(-50%);
             }
 
             &--right {
                 @extend .chaptertranslation__pages__button;
+                width: 32.5%;
                 right: 0;
             }
         }

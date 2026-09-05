@@ -13,23 +13,23 @@ import { chaptertranslation } from '../../Shared/types/Data/chaptertranslation';
 //# Classes //
 import './chaptertranslation.scss'
 import './footerct.scss'
-import './headerct.scss'
+import './asidect.scss'
 
 //# Header
-function HeaderCt({ data, currentPage }: { data: chaptertranslation, currentPage: number }) {
+function AsideCt({ data, currentPage, renderOverlayVisible }: { data: chaptertranslation, currentPage: number, renderOverlayVisible: boolean }) {
     if (!data) return
     return (
-        <header className='headerct'>
-            <section className='headerct__info'>
-                <Text className='headerct__info__chapter-title' tag='h2'>
+        <aside className={`asidect ${renderOverlayVisible ? '' : 'asidect--hide'}`}>
+            <section className='asidect__info'>
+                <Text className='asidect__info__chapter-title' tag='h2'>
                     {data.chapterTitle}
                 </Text>
-                <Link to={`/title/${data.titleId}/${data.titleName}`} className='headerct__info__title-link'>
+                <Link to={`/title/${data.titleId}/${data.titleName}`} className='asidect__info__title-link'>
                     {data.titleName}
                 </Link>
             </section>
 
-        </header>
+        </aside>
     )
 }
 //# Footer
@@ -43,10 +43,10 @@ function ChapterProgress({ currentPage, totalPages }: { currentPage: number, tot
         </nav>
     )
 }
-function FooterCt({ data, currentPage }: { data: chaptertranslation, currentPage: number }) {
+function FooterCt({ data, currentPage, renderOverlayVisible }: { data: chaptertranslation, currentPage: number, renderOverlayVisible: boolean }) {
     if (!data) return
     return (
-        <footer className='footerct'>
+        <footer className={`footerct ${renderOverlayVisible ? 'footerct--hide' : ''}`}>
             <ChapterProgress currentPage={currentPage} totalPages={data?.pages.length} />
         </footer>
     )
@@ -55,12 +55,20 @@ export default function ChapterTranslation() {
     const { chapterTranslationId } = useParams();
     const [data, setData] = useState<chaptertranslation>()
     const [currentPage, setCurrentPage] = useState<number>(0)
+    const [renderOverlayVisible, setRenderOverlayVisible] = useState(true)
 
     async function req() {
         const res = await GetChapterTranslation(Number(chapterTranslationId))
         if (res) setData(res)
     }
+    function handleReaderOverlay() {
+        setRenderOverlayVisible(current => !current);
+    }
     function handleTitleSwitch(direction: number) {
+        if(renderOverlayVisible) {
+            setRenderOverlayVisible(false) 
+            return
+        }
         if (!data) return
 
         let newImageIndex = currentPage + Math.sign(direction)
@@ -71,12 +79,16 @@ export default function ChapterTranslation() {
     }
 
     useEffect(() => {
+        setTimeout(() => {
+            setRenderOverlayVisible(false)
+        }, 3500);
+    }, []);
+    useEffect(() => {
         req()
     }, [chapterTranslationId])
 
     return (
         <>
-            <HeaderCt data={data as chaptertranslation} currentPage={currentPage} />
             <section className='chaptertranslation__pages'>
                 <div className='chaptertranslation__pages__container'>
                     <Img
@@ -92,12 +104,19 @@ export default function ChapterTranslation() {
                     <Button
                         type='button'
                         defaultStyle={false}
+                        className='chaptertranslation__pages__button--center'
+                        onClick={() => handleReaderOverlay()}
+                    />
+                    <Button
+                        type='button'
+                        defaultStyle={false}
                         className='chaptertranslation__pages__button--right'
                         onClick={() => handleTitleSwitch(1)}
                     />
                 </div>
             </section>
-            <FooterCt data={data as chaptertranslation} currentPage={currentPage} />
+            <AsideCt data={data as chaptertranslation} currentPage={currentPage} renderOverlayVisible={renderOverlayVisible} />
+            <FooterCt data={data as chaptertranslation} currentPage={currentPage} renderOverlayVisible={renderOverlayVisible} />
         </>
     )
 }
