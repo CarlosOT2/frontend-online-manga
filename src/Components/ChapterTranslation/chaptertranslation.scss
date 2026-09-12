@@ -1,6 +1,7 @@
 //# Uses //
 @use '../../Shared/styles/default/header' as header;
 @use '../../Shared/styles/default/layout' as layout;
+@use '../../Shared/styles/mixins/no-select' as no-select;
 
 .chaptertranslation {
     &__pages {
@@ -24,6 +25,9 @@
 
         &__img {
             width: 100%;
+            height: auto;
+            aspect-ratio: 2 / 3;
+            @include no-select.no-select;
         }
 
         &__button {

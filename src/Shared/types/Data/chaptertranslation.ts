@@ -4,6 +4,13 @@ export type chaptertranslationpage = {
     imageUrl: string
 }
 
+export type availablechaptertranslation = {
+    translationId: number
+    chapterNumber: number,
+    scanId: number
+}
+
+
 export type chaptertranslation = {
     id: number,
     titleId: number,
@@ -11,6 +18,7 @@ export type chaptertranslation = {
     chapterNumber: number,
     chapterTitle: string,
     scanName: string,
+    availableChaptersTranslations: availablechaptertranslation[],
     languageId: number,
     pages: chaptertranslationpage[]
 }
