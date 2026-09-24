@@ -13,7 +13,11 @@
     border-radius: border-radius.$border-radius;
 
     transition: filter transition-time.$transition-time ease;
-    
+
+    height: 45px;
+
+    padding: 2px;
+
     &:hover {
         cursor: pointer;
         filter: brightness(90%);

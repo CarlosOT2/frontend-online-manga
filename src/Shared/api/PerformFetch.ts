@@ -14,9 +14,7 @@ const APIUrl = import.meta.env.VITE_API_URL;
  * @returns {Promise<any>} return res.json() as T
  * @throws {Error} 
  */
-
 export default async function PerformFetch<T>(config: config): Promise<T> {
-
     const {
         method = "GET",
         headers = {},

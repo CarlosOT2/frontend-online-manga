@@ -1,9 +1,9 @@
 $light-theme: (
     //.. Background
-    background-color: rgb(243, 243, 243),
+    background-color: rgb(240, 240, 240),
     //.. Colors 
     color1: rgb(255, 255, 255),
-    color2: rgb(170, 170, 170),
+    color2: rgb(180, 180, 180),
     color3: rgb(7, 167, 241),
     color4: rgb(138, 209, 241),
     color5: rgb(0, 136, 199),
@@ -16,6 +16,7 @@ $light-theme: (
 
     //.. Others
     box-shadow: rgba(0, 0, 0, 0.75),
+    weak-box-shadow: rgba(0, 0, 0, 0.10),
 
     true: rgb(0, 175, 0),
     true-transparent: rgba(0, 175, 0, 0.2),

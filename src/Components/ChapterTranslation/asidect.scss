@@ -4,6 +4,7 @@
 @use '../../Shared/styles/default/text' as text;
 @use '../../Shared/styles/default/transition-time' as transition-time;
 @use '../../Shared/styles/default/border-radius' as border-radius;
+@use '../../Shared/styles/default/button' as button;
 
 .asidect {
     position: fixed;
@@ -12,17 +13,15 @@
 
     display: flex;
     flex-direction: column;
-    align-items: center;
 
-    width: 250px;
+    width: 270px;
     height: 100%;
 
     padding: 35px;
     gap: 10px;
 
     background-color: var(--color1);
-    border-left: 0.01rem solid var(--color3);
-
+    box-shadow: -2px 0 10px var(--weak-box-shadow);
     transition: transform transition-time.$transition-time ease;
 
     transform: translateX(0);
@@ -34,28 +33,93 @@
 
     &__header {
         margin-bottom: 25px;
+
+
+        &__info {
+            display: flex;
+            flex-direction: column;
+
+            width: 100%;
+
+            gap: 5px;
+
+            &__title-link {
+                color: var(--color3);
+                font-size: text.$font-size2;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            &__chapter-title {
+                margin: 0;
+                font-weight: bold;
+                font-size: text.$font-size4;
+            }
+        }
+
     }
 
     &__info {
-        display: flex;
-        flex-direction: column;
-
         width: 100%;
 
-        gap: 5px;
-
-        &__title-link {
-            color: var(--color3);
-            font-size: text.$font-size2;
-            font-weight: bold;
+        &-title {
             margin: 0;
-        }
-
-        &__chapter-title {
-            margin: 0;
-            font-weight: bold;
             font-size: text.$font-size4;
         }
+
+        &-text {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: text.$font-size5;
+            font-weight: bold;
+
+            margin-top: 10px;
+
+            &__icon {
+                font-size: text.$font-size4;
+            }
+        }
+    }
+
+    &__footer {
+        &-button {
+            position: relative;
+            margin-top: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+
+        }
+
+        &-icon {
+            position: absolute;
+            left: 6%;
+            color: var(--color1);
+            font-size: text.$font-size4;
+        }
+
+        &-text {
+            text-align: center;
+
+            color: var(--color1);
+            white-space: nowrap;
+            font-weight: bold;
+            font-size: text.$font-size5;
+        }
+    }
+
+    &__hr {
+        border: none;
+
+        margin: 15px 0;
+
+        width: 100%;
+        height: 0.125rem;
+        background-color: var(--color2);
     }
 
     &__input {

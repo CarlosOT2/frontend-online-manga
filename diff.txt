@@ -1,0 +1,801 @@
+diff --git a/src/Components/ChapterTranslation/asidect.scss b/src/Components/ChapterTranslation/asidect.scss
+index 2103040..a69533b 100644
+--- a/src/Components/ChapterTranslation/asidect.scss
++++ b/src/Components/ChapterTranslation/asidect.scss
+@@ -4,6 +4,7 @@
+ @use '../../Shared/styles/default/text' as text;
+ @use '../../Shared/styles/default/transition-time' as transition-time;
+ @use '../../Shared/styles/default/border-radius' as border-radius;
++@use '../../Shared/styles/default/button' as button;
+ 
+ .asidect {
+     position: fixed;
+@@ -12,17 +13,15 @@
+ 
+     display: flex;
+     flex-direction: column;
+-    align-items: center;
+ 
+-    width: 250px;
++    width: 270px;
+     height: 100%;
+ 
+     padding: 35px;
+     gap: 10px;
+ 
+     background-color: var(--color1);
+-    border-left: 0.01rem solid var(--color3);
+-
++    box-shadow: -2px 0 10px var(--weak-box-shadow);
+     transition: transform transition-time.$transition-time ease;
+ 
+     transform: translateX(0);
+@@ -34,28 +33,93 @@
+ 
+     &__header {
+         margin-bottom: 25px;
++
++
++        &__info {
++            display: flex;
++            flex-direction: column;
++
++            width: 100%;
++
++            gap: 5px;
++
++            &__title-link {
++                color: var(--color3);
++                font-size: text.$font-size2;
++                font-weight: bold;
++                margin: 0;
++            }
++
++            &__chapter-title {
++                margin: 0;
++                font-weight: bold;
++                font-size: text.$font-size4;
++            }
++        }
++
+     }
+ 
+     &__info {
+-        display: flex;
+-        flex-direction: column;
+-
+         width: 100%;
+ 
+-        gap: 5px;
+-
+-        &__title-link {
+-            color: var(--color3);
+-            font-size: text.$font-size2;
+-            font-weight: bold;
++        &-title {
+             margin: 0;
++            font-size: text.$font-size4;
+         }
+ 
+-        &__chapter-title {
+-            margin: 0;
++        &-text {
++            display: flex;
++            align-items: center;
++
++            gap: 10px;
++
++            font-size: text.$font-size5;
+             font-weight: bold;
++
++            margin-top: 10px;
++
++            &__icon {
++                font-size: text.$font-size4;
++            }
++        }
++    }
++
++    &__footer {
++        &-button {
++            position: relative;
++            margin-top: 5px;
++            display: flex;
++            justify-content: center;
++            align-items: center;
++            width: 100%;
++
++        }
++
++        &-icon {
++            position: absolute;
++            left: 6%;
++            color: var(--color1);
+             font-size: text.$font-size4;
+         }
++
++        &-text {
++            text-align: center;
++
++            color: var(--color1);
++            white-space: nowrap;
++            font-weight: bold;
++            font-size: text.$font-size5;
++        }
++    }
++
++    &__hr {
++        border: none;
++
++        margin: 15px 0;
++
++        width: 100%;
++        height: 0.125rem;
++        background-color: var(--color2);
+     }
+ 
+     &__input {
+diff --git a/src/Components/ChapterTranslation/chaptertranslation.tsx b/src/Components/ChapterTranslation/chaptertranslation.tsx
+index a8a3f3b..32d4e74 100644
+--- a/src/Components/ChapterTranslation/chaptertranslation.tsx
++++ b/src/Components/ChapterTranslation/chaptertranslation.tsx
+@@ -1,266 +1,311 @@
+-//# Components //
++//# Components
+ import Img from '../Global/img';
+ import Button from '../Global/Inputs/button';
+ import Text from '../Global/text';
+ import Link from '../Global/link';
+-import SelectInput from '../Global/Inputs/selectinput';
+ //# Libs //
+-import { useEffect, useState, useRef } from 'react'
+-import { useParams, useNavigate } from 'react-router'
+-//# Api //
+-import { GetChapterTranslation } from '../../Shared/api/FetchChapterTranslation'
++import { useEffect, useRef, useState } from 'react';
++import { useNavigate, useParams } from 'react-router';
++//# API //
++import { GetChapterTranslation } from '../../Shared/api/FetchChapterTranslation';
+ //# Types //
+ import { availablechaptertranslation, chaptertranslation } from '../../Shared/types/Data/chaptertranslation';
+ //# Config //
+ import { preloadImageAmount } from '../../config/chaptertranslation';
+ //# Classes //
+-import './chaptertranslation.scss'
+-import './footerct.scss'
+-import './asidect.scss'
++import './chaptertranslation.scss';
++import './footerct.scss';
++import './asidect.scss';
++import './selectinputct.scss';
++//# Icons //
++import { IoIosArrowBack, IoIosArrowDown, IoIosArrowForward } from 'react-icons/io';
++import { FaArrowLeft, FaArrowRight, FaBackwardStep, FaUserGroup } from 'react-icons/fa6';
+ 
++//# Types //
++type Option<T> = { label: string; value: T };
++type Direction = -1 | 1;
++type SelectInputCtProps<T> = {
++    name: string;
++    options: Option<T>[];
++    selectedValue: T | undefined;
++    isOpen: boolean;
++    onToggle: () => void;
++    onOptionSelect: (value: T) => void;
++    onButtonPrevious: () => void;
++    onButtonNext: () => void;
++};
++type AsideCtProps = {
++    data?: chaptertranslation;
++    visible: boolean;
++    currentPage: number;
++    currentChapterId: number;
++    setCurrentPage: (index: number) => void;
++    changePage: (direction: Direction, fromReader?: boolean) => void;
++    changeChapter: (direction: Direction) => void;
++};
+ 
+-function getFilteredChapters(translations: availablechaptertranslation[], currentTranslationId: number) {
+-    const currentTranslation = translations.find(translation => translation.translationId === currentTranslationId)
+-    if (!currentTranslation) return translations
++//# Misc //
++function getFilteredChapters(translations: availablechaptertranslation[], currentId: number) {
++    const currentScanId = translations.find(item => item.translationId === currentId)?.scanId;
++    if (currentScanId === undefined) return translations;
+ 
+-    const currentScanId = currentTranslation.scanId;
+-    const chapterNumbers = [...new Set(translations.map(translation => translation.chapterNumber))];
++    const chapters = new Map<number, availablechaptertranslation>();
++    for (const translation of translations) {
++        const previous = chapters.get(translation.chapterNumber);
++        if (!previous || (previous.scanId !== currentScanId && translation.scanId === currentScanId)) {
++            chapters.set(translation.chapterNumber, translation);
++        }
++    }
++    return [...chapters.values()].sort((a, b) => a.chapterNumber - b.chapterNumber);
++}
+ 
+-    const filteredChapters = chapterNumbers.map(chapterNumber => {
+-        const translationFromCurrentScan = translations.find(
+-            translation =>
+-                translation.chapterNumber === chapterNumber && translation.scanId === currentScanId
+-        );
++//# Select Input
++function SelectInputCt<T>({
++    name, options, selectedValue, isOpen, onToggle, onOptionSelect, onButtonPrevious, onButtonNext
++}: SelectInputCtProps<T>) {
++    const selectedOption = options.find(option => option.value === selectedValue);
++    const listRef = useRef<HTMLUListElement>(null);
++    const selectedItemRef = useRef<HTMLLIElement>(null);
+ 
+-        if (translationFromCurrentScan) {
+-            return translationFromCurrentScan
+-        } else {
+-            return translations.find(translation => translation.chapterNumber === chapterNumber)!
+-        }
+-    });
++    //# useEffects //
++    useEffect(() => {
++        if (!isOpen || !listRef.current || !selectedItemRef.current) return
++        const list = listRef.current
++        const selectedItem = selectedItemRef.current
++        list.scrollTop += selectedItem.getBoundingClientRect().top - list.getBoundingClientRect().top - (list.clientHeight - selectedItem.clientHeight) / 2
++    }, [selectedOption])
+ 
+-    return filteredChapters.sort((a, b) => a.chapterNumber - b.chapterNumber)
++    return (
++        <div className="selectinputct">
++            <Button defaultStyle={false} className="selectinputct__button-previous" onClick={onButtonPrevious}>
++                <IoIosArrowBack className="selectinputct__icon--previous" />
++            </Button>
++            <div className="selectinputct__container">
++                <Button
++                    className={`selectinputct__button-trigger ${isOpen ? 'selectinputct__button-trigger--opened' : ''}`}
++                    defaultStyle={false}
++                    id={name}
++                    onClick={onToggle}
++                >
++                    <Text tag="span" className="selectinputct__label1">{name}</Text>
++                    <Text tag="span" className="selectinputct__label2">{selectedOption?.label ?? ''}</Text>
++                    <IoIosArrowDown className={isOpen ? 'selectinputct__icon-trigger--open' : 'selectinputct__icon-trigger--closed'} />
++                </Button>
++                <ul
++                    ref={listRef}
++                    className={`selectinputct__list ${isOpen ? 'selectinputct__list--opened' : 'selectinputct__list--closed'}`}
++                    aria-hidden={!isOpen}
++                >
++                    {options.map(option => (
++                        <li
++                            ref={option.value === selectedValue ? selectedItemRef : null}
++                            key={String(option.value)}
++                            className={`
++                                selectinputct__list__item 
++                                ${option.value == selectedValue && "selectinputct__list__item--selected"}`
++                            }
++                            onClick={() => {
++                                onOptionSelect(option.value);
++                            }}
++                        >
++                            <Text tag="span" className="selectinputct__list__item-text">{option.label}</Text>
++                        </li>
++                    ))}
++                </ul>
++            </div>
++            <Button defaultStyle={false} className="selectinputct__button-next" onClick={onButtonNext}>
++                <IoIosArrowForward className="selectinputct__icon--next" />
++            </Button>
++        </div>
++    );
+ }
+ 
++//# Aside //
++function AsideCt({ data, visible, currentPage, currentChapterId, setCurrentPage, changePage, changeChapter }: AsideCtProps) {
++    const navigate = useNavigate();
++    const [openSelect, setOpenSelect] = useState<"pages" | "chapters" | null>(null);
+ 
+-//# Header
+-function AsideCt(
+-    {
+-        data,
+-        renderOverlayVisible,
+-        currentPage,
+-        setCurrentPage,
+-        currentChapterTranslationId
+-    }:
+-        {
+-            data?: chaptertranslation,
+-            renderOverlayVisible: boolean,
+-            currentPage: number,
+-            setCurrentPage: (page: number) => void;
+-            currentChapterTranslationId: string
+-        }
+-) {
+-    if (!data) return
++    if (!data) return null;
++
++    const titleUrl = `/title/${data.titleId}/${data.titleName}`;
++    const pages: Option<number>[] = data.pages.map(page => ({ label: String(page.pageNumber), value: page.pageNumber }));
++    const chapters: Option<number>[] = getFilteredChapters(data.availableChaptersTranslations, currentChapterId)
++        .map(chapter => ({ label: String(chapter.chapterNumber), value: chapter.translationId }));
+ 
+-    const navigate = useNavigate()
+-    const filteredChapters = getFilteredChapters(data.availableChaptersTranslations, Number(currentChapterTranslationId))
+     return (
+-        <aside className={`asidect ${renderOverlayVisible ? '' : 'asidect--hide'}`}>
+-            <header className='asidect__header'>
+-                <section className='asidect__header__info'>
+-                    <Link to={`/title/${data.titleId}/${data.titleName}`} className='asidect__info__title-link'>
+-                        <Text tag='h2' className='asidect__info__title-link'>
+-                            {data.titleName}
+-                        </Text>
++        <aside className={`asidect ${visible ? '' : 'asidect--hide'}`}>
++            <header className="asidect__header">
++                <section className="asidect__header__info">
++                    <Link to={titleUrl} className="asidect__header__info__title-link">
++                        <Text tag="h2" className="asidect__header__info__title-link">{data.titleName}</Text>
+                     </Link>
+-                    <Text className='asidect__info__chapter-title' tag='span'>
+-                        {data.chapterTitle}
+-                    </Text>
++                    <Text tag="span" className="asidect__header__info__chapter-title">{data.chapterTitle}</Text>
+                 </section>
+             </header>
++            <SelectInputCt
++                name="Pages"
++                options={pages}
++                selectedValue={data.pages[currentPage]?.pageNumber}
++                onOptionSelect={pageNumber => {
++                    setOpenSelect(null)
++                    const index = data.pages.findIndex(page => page.pageNumber === pageNumber);
++                    if (index !== -1) setCurrentPage(index);
++                }}
+ 
+-            <SelectInput
+-                name="pages"
+-                value={currentPage}
+-                className={`asidect__input-select`}
+-                onChange={(event) => setCurrentPage(Number(event.target.value))}
+-            >
+-                {data.pages.map((page, index) => (
+-                    <option key={page.id} value={index}>
+-                        Page {index + 1}
+-                    </option>
+-                ))}
+-            </SelectInput>
+-            <SelectInput
++                isOpen={openSelect === "pages"}
++                onToggle={() => setOpenSelect(current => current === "pages" ? null : "pages")}
++
++                onButtonPrevious={() => changePage(-1, false)}
++                onButtonNext={() => changePage(1, false)}
++            />
++            <SelectInputCt
+                 name="Chapters"
+-                className={`asidect__input-select`}
+-                value={currentChapterTranslationId}
+-                onChange={(event) => {
+-                    const translationId = Number(event.target.value)
+-                    navigate(`/title/${data.titleId}/${data.titleName}/chaptertranslation/${translationId}`);
++                options={chapters}
++                selectedValue={currentChapterId}
++                onOptionSelect={id => {
++                    setOpenSelect(null)
++                    navigate(`${titleUrl}/chaptertranslation/${id}`)
+                 }}
+-            >
+-                {filteredChapters.map((chaptertranslation, index) => (
+-                    <option key={index} value={chaptertranslation.translationId}>
+-                        Chapter {chaptertranslation.chapterNumber}
+-                    </option>
+-                ))}
+-            </SelectInput>
+-            <footer className="asidect__footer">
+ 
++                isOpen={openSelect === "chapters"}
++                onToggle={() => setOpenSelect(current => current === "chapters" ? null : "chapters")}
++
++
++                onButtonPrevious={() => changeChapter(-1)}
++                onButtonNext={() => changeChapter(1)}
++            />
++            <hr className="asidect__hr" />
++            <section className="asidect__info">
++                <Text tag="h2" className="asidect__info-title">Uploaded By</Text>
++                <Text tag="span" className="asidect__info-text">
++                    <FaUserGroup className="asidect__info-text__icon" /> {data.scanName}
++                </Text>
++            </section>
++            <hr className="asidect__hr" />
++            <footer className="asidect__footer">
++                <Button
++                    className="asidect__footer-button"
++                    icon={<FaBackwardStep className="asidect__footer-icon" />}
++                    onClick={() => setCurrentPage(0)}
++                >
++                    <Text tag="span" className="asidect__footer-text">Go to First Page</Text>
++                </Button>
++                <Button
++                    className="asidect__footer-button"
++                    icon={<FaArrowRight className="asidect__footer-icon" />}
++                    onClick={() => changeChapter(1)}
++                >
++                    <Text tag="span" className="asidect__footer-text">Next Chapter</Text>
++                </Button>
++                <Button
++                    className="asidect__footer-button"
++                    icon={<FaArrowLeft className="asidect__footer-icon" />}
++                    onClick={() => changeChapter(-1)}
++                >
++                    <Text tag="span" className="asidect__footer-text">Previous Chapter</Text>
++                </Button>
+             </footer>
+         </aside>
+-    )
+-}
+-//# Footer
+-function ChapterProgress({ currentPage, totalPages }: { currentPage: number, totalPages: number }) {
+-    const progress = (currentPage / totalPages) * 100
+-    return (
+-        <nav className='footerct__progress'>
+-            <div className="footerct__progress-track">
+-                <div className="footerct__progress-fill" style={{ width: `${progress}%` }} />
+-            </div>
+-        </nav>
+-    )
++    );
+ }
+-function FooterCt({ totalPages, currentPage, renderOverlayVisible }: { totalPages: number, currentPage: number, renderOverlayVisible: boolean }) {
++
++//# Footer //
++function FooterCt({ totalPages, currentPage, visible }: { totalPages: number; currentPage: number; visible: boolean }) {
++    const progress = totalPages > 0 ? ((currentPage + 1) / totalPages) * 100 : 0;
+     return (
+-        <footer className={`footerct ${renderOverlayVisible ? 'footerct--hide' : ''}`}>
+-            <ChapterProgress currentPage={currentPage + 1} totalPages={totalPages} />
++        <footer className={`footerct ${visible ? 'footerct--hide' : ''}`}>
++            <nav className="footerct__progress">
++                <div className="footerct__progress-track">
++                    <div className="footerct__progress-fill" style={{ width: `${progress}%` }} />
++                </div>
++            </nav>
+         </footer>
+-    )
++    );
+ }
++
+ export default function ChapterTranslation() {
+     const { chapterTranslationId } = useParams();
+-    const navigate = useNavigate()
++    const navigate = useNavigate();
+     const preloadedUrls = useRef(new Set<string>());
+ 
+-    const [data, setData] = useState<chaptertranslation>()
+-    const [renderOverlayVisible, setRenderOverlayVisible] = useState(true)
++    const [data, setData] = useState<chaptertranslation>();
+     const [currentPage, setCurrentPage] = useState(0);
++    const [overlayVisible, setOverlayVisible] = useState(true);
+ 
++    const currentChapterId = Number(chapterTranslationId);
+ 
+-    function changeChapter(direction: number) {
++    //# Functions //
++    function changeChapter(direction: Direction) {
+         if (!data) return;
++        const chapters = getFilteredChapters(data.availableChaptersTranslations, currentChapterId);
++        const index = chapters.findIndex(chapter => chapter.translationId === currentChapterId);
++        if (index === -1) return;
+ 
+-        const filteredChapters = getFilteredChapters(data.availableChaptersTranslations, Number(chapterTranslationId))
+-        const currentChapterIndex = filteredChapters.findIndex(chapter => chapter.translationId === Number(chapterTranslationId))
+-
+-        if (currentChapterIndex === -1) return
+-
+-        const newChapterIndex = currentChapterIndex + Math.sign(direction);
+-        const newChapter = filteredChapters[newChapterIndex];
+-
+-
+-        if (newChapter) {
+-            navigate(`/title/${data.titleId}/${data.titleName}/chaptertranslation/${newChapter.translationId}`)
+-        } else {
+-            navigate(`/title/${data.titleId}/${data.titleName}`)
+-        }
+-    }
+-    function preloadNextPages(pages: chaptertranslation["pages"], currentPage: number, preloadedUrls: Set<string>) {
+-        const nextPages = pages.slice(currentPage + 1, currentPage + 1 + preloadImageAmount)
+-
+-        nextPages.forEach(page => {
+-            const imageUrl = page.imageUrl
+-            if (preloadedUrls.has(imageUrl)) return
+-            preloadedUrls.add(imageUrl)
+-
+-            const image = new Image();
+-            image.onerror = () => { preloadedUrls.delete(imageUrl) }
+-            image.src = imageUrl
+-        });
++        const next = chapters[index + direction];
++        const titleUrl = `/title/${data.titleId}/${data.titleName}`;
++        navigate(next ? `${titleUrl}/chaptertranslation/${next.translationId}` : titleUrl);
+     }
+-
+-    function handleReaderOverlay() {
+-        setRenderOverlayVisible(current => !current);
+-    }
+-    function handleTitleSwitch(direction: number) {
+-        if (renderOverlayVisible) {
+-            setRenderOverlayVisible(false);
++    function changePage(direction: Direction, closeAsideOnClick = true) {
++        if (closeAsideOnClick && overlayVisible) {
++            setOverlayVisible(false);
+             return;
+         }
+         if (!data) return;
+ 
+-        const newCurrentPage = currentPage + Math.sign(direction);
+-
+-        if (newCurrentPage >= data.pages.length) {
+-            changeChapter(1);
+-            return;
+-        }
+-        if (newCurrentPage < 0) {
+-            changeChapter(-1);
+-            return;
++        const next = currentPage + direction;
++        if (next < 0 || next >= data.pages.length) {
++            changeChapter(direction);
++        } else {
++            setCurrentPage(next);
+         }
+-
+-        setCurrentPage(newCurrentPage);
+     }
+ 
++    //# useEffects //
+     useEffect(() => {
+-        setTimeout(() => {
+-            setRenderOverlayVisible(false)
+-        }, 1500);
+-    }, []);
+-    useEffect(() => {
+-        let requestCancelled = false;
+-
+-        async function loadChapter() {
+-            setData(undefined)
+-            setCurrentPage(0)
+-            const res = await GetChapterTranslation(Number(chapterTranslationId));
+-            if (res) setData(res)
+-        }
+-        loadChapter()
++        let cancelled = false;
++        setData(undefined);
++        setCurrentPage(0);
+ 
+-        return () => { requestCancelled = true }
+-    }, [chapterTranslationId])
++        GetChapterTranslation(currentChapterId).then(result => {
++            if (!cancelled && result) setData(result);
++        });
++        return () => { cancelled = true; };
++    }, [chapterTranslationId]);
+     useEffect(() => {
+-        if (!data) return
+-        preloadNextPages(data.pages, currentPage, preloadedUrls.current)
++        if (!data) return;
++        for (const page of data.pages.slice(currentPage + 1, currentPage + 1 + preloadImageAmount)) {
++            if (preloadedUrls.current.has(page.imageUrl)) continue;
++            preloadedUrls.current.add(page.imageUrl);
++            const image = new Image();
++            image.onerror = () => preloadedUrls.current.delete(page.imageUrl);
++            image.src = page.imageUrl;
++        }
+     }, [data, currentPage]);
+ 
+-    console.log(data)
+     return (
+         <>
+-            <section className='chaptertranslation__pages'>
+-                <div className='chaptertranslation__pages__container'>
++            <section className="chaptertranslation__pages">
++                <div className="chaptertranslation__pages__container">
+                     <Img
+                         key={`${chapterTranslationId}-${data?.pages[currentPage]?.id}`}
+-                        className='chaptertranslation__pages__img'
++                        className="chaptertranslation__pages__img"
+                         src={data?.pages[currentPage]?.imageUrl}
+                     />
+-                    <Button
+-                        type='button'
+-                        defaultStyle={false}
+-                        className='chaptertranslation__pages__button--left'
+-                        onClick={() => handleTitleSwitch(-1)}
+-                    />
+-                    <Button
+-                        type='button'
+-                        defaultStyle={false}
+-                        className='chaptertranslation__pages__button--center'
+-                        onClick={() => handleReaderOverlay()}
+-                    />
+-                    <Button
+-                        type='button'
+-                        defaultStyle={false}
+-                        className='chaptertranslation__pages__button--right'
+-                        onClick={() => handleTitleSwitch(1)}
+-                    />
++                    <Button type="button" defaultStyle={false} className="chaptertranslation__pages__button--left" onClick={() => changePage(-1)} />
++                    <Button type="button" defaultStyle={false} className="chaptertranslation__pages__button--center" onClick={() => setOverlayVisible(value => !value)} />
++                    <Button type="button" defaultStyle={false} className="chaptertranslation__pages__button--right" onClick={() => changePage(1)} />
+                 </div>
+             </section>
+             <AsideCt
+                 data={data}
+-                setCurrentPage={setCurrentPage}
++                visible={overlayVisible}
+                 currentPage={currentPage}
+-                renderOverlayVisible={renderOverlayVisible}
+-                currentChapterTranslationId={chapterTranslationId || ""}
+-            />
+-            <FooterCt
+-                totalPages={data?.pages.length || 0}
+-                currentPage={currentPage}
+-                renderOverlayVisible={renderOverlayVisible}
++                currentChapterId={currentChapterId}
++                setCurrentPage={setCurrentPage}
++                changePage={changePage}
++                changeChapter={changeChapter}
+             />
++            <FooterCt totalPages={data?.pages.length ?? 0} currentPage={currentPage} visible={overlayVisible} />
+         </>
+-    )
++    );
+ }
+\ No newline at end of file
+diff --git a/src/Components/Global/Inputs/button.tsx b/src/Components/Global/Inputs/button.tsx
+index af6d33e..7564aea 100644
+--- a/src/Components/Global/Inputs/button.tsx
++++ b/src/Components/Global/Inputs/button.tsx
+@@ -6,6 +6,8 @@ import './button.scss'
+ interface button {
+     /** type of the button */
+     type?: "button" | "submit" | "reset",
++    /** id of the button */
++    id?: any
+     /** additional CSS classes to apply */
+     className?: string
+     /** children of the button */
+@@ -25,6 +27,7 @@ interface button {
+ export default function button({
+     type = "button",
+     className = '',
++    id,
+     children,
+     onClick,
+     icon,
+@@ -38,6 +41,7 @@ export default function button({
+         <>
+             <button
+                 type={type}
++                id={id}
+                 onClick={onClick}
+                 className={FilterClasses(frmtd_className)}
+                 aria-label={ariaLabel}
+diff --git a/src/Components/Global/Inputs/selectinput.scss b/src/Components/Global/Inputs/selectinput.scss
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/src/Components/Global/Inputs/selectinput.tsx b/src/Components/Global/Inputs/selectinput.tsx
+deleted file mode 100644
+index f8dc370..0000000
+--- a/src/Components/Global/Inputs/selectinput.tsx
++++ /dev/null
+@@ -1,17 +0,0 @@
+-//# Types //
+-import { ReactNode, SelectHTMLAttributes } from "react";
+-//# Classes //
+-import './selectinput.scss'
+-
+-interface selectinput extends SelectHTMLAttributes<HTMLSelectElement> {
+-    /** Options rendered inside the select */
+-    children: ReactNode
+-}
+-
+-export default function selectinput({ children, ...props }: selectinput) {
+-    return (
+-        <select {...props}>
+-            {children}
+-        </select>
+-    )
+-}
+\ No newline at end of file
+diff --git a/src/Components/Global/img.scss b/src/Components/Global/img.scss
+index 1900dc3..f058797 100644
+--- a/src/Components/Global/img.scss
++++ b/src/Components/Global/img.scss
+@@ -6,7 +6,6 @@
+     width: 100%;
+     height: 100%;
+     font-size: 0;
+-    object-fit: contain;
+ 
+     &__container {
+         position: relative;
+diff --git a/src/Components/Title/title.scss b/src/Components/Title/title.scss
+index f57bcf5..ede429a 100644
+--- a/src/Components/Title/title.scss
++++ b/src/Components/Title/title.scss
+@@ -133,7 +133,6 @@ $text-shadow: 0px 0px 10px var(--text-color);
+             box-shadow: 0px 0px 10px var(--box-shadow);
+ 
+             width: 20%;
+-            height: 100%;
+ 
+             &-container {
+                 display: flex;
+diff --git a/src/Components/Title/title.tsx b/src/Components/Title/title.tsx
+index b17474e..659bc00 100644
+--- a/src/Components/Title/title.tsx
++++ b/src/Components/Title/title.tsx
+@@ -39,10 +39,7 @@ function Buttons() {
+ }
+ 
+ function SectionMeta({ data }: { data: title | undefined }) {
+-    if (!data) {
+-        console.warn("Warn: Failed to load section meta content data")
+-        return
+-    }
++    if (!data) return
+ 
+     type metadata = title[titlemetakeys] | undefined
+     type groupconfig = {
+diff --git a/src/Shared/api/PerformFetch.ts b/src/Shared/api/PerformFetch.ts
+index fb7c3d1..86678cb 100644
+--- a/src/Shared/api/PerformFetch.ts
++++ b/src/Shared/api/PerformFetch.ts
+@@ -14,9 +14,7 @@ const APIUrl = import.meta.env.VITE_API_URL;
+  * @returns {Promise<any>} return res.json() as T
+  * @throws {Error} 
+  */
+-
+ export default async function PerformFetch<T>(config: config): Promise<T> {
+-
+     const {
+         method = "GET",
+         headers = {},
+diff --git a/src/Shared/styles/_themes.scss b/src/Shared/styles/_themes.scss
+index abea2f5..0591c9b 100644
+--- a/src/Shared/styles/_themes.scss
++++ b/src/Shared/styles/_themes.scss
+@@ -1,9 +1,9 @@
+ $light-theme: (
+     //.. Background
+-    background-color: rgb(243, 243, 243),
++    background-color: rgb(240, 240, 240),
+     //.. Colors 
+     color1: rgb(255, 255, 255),
+-    color2: rgb(170, 170, 170),
++    color2: rgb(180, 180, 180),
+     color3: rgb(7, 167, 241),
+     color4: rgb(138, 209, 241),
+     color5: rgb(0, 136, 199),
+@@ -16,6 +16,7 @@ $light-theme: (
+ 
+     //.. Others
+     box-shadow: rgba(0, 0, 0, 0.75),
++    weak-box-shadow: rgba(0, 0, 0, 0.10),
+ 
+     true: rgb(0, 175, 0),
+     true-transparent: rgba(0, 175, 0, 0.2),
+diff --git a/src/Shared/styles/default/_button.scss b/src/Shared/styles/default/_button.scss
+index fc195f5..41ed0ce 100644
+--- a/src/Shared/styles/default/_button.scss
++++ b/src/Shared/styles/default/_button.scss
+@@ -13,7 +13,11 @@
+     border-radius: border-radius.$border-radius;
+ 
+     transition: filter transition-time.$transition-time ease;
+-    
++
++    height: 45px;
++
++    padding: 2px;
++
+     &:hover {
+         cursor: pointer;
+         filter: brightness(90%);

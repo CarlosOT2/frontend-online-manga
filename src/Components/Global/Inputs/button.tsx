@@ -6,6 +6,8 @@ import './button.scss'
 interface button {
     /** type of the button */
     type?: "button" | "submit" | "reset",
+    /** id of the button */
+    id?: any
     /** additional CSS classes to apply */
     className?: string
     /** children of the button */
@@ -25,6 +27,7 @@ interface button {
 export default function button({
     type = "button",
     className = '',
+    id,
     children,
     onClick,
     icon,
@@ -38,6 +41,7 @@ export default function button({
         <>
             <button
                 type={type}
+                id={id}
                 onClick={onClick}
                 className={FilterClasses(frmtd_className)}
                 aria-label={ariaLabel}

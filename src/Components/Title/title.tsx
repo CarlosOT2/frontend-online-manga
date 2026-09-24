@@ -39,10 +39,7 @@ function Buttons() {
 }
 
 function SectionMeta({ data }: { data: title | undefined }) {
-    if (!data) {
-        console.warn("Warn: Failed to load section meta content data")
-        return
-    }
+    if (!data) return
 
     type metadata = title[titlemetakeys] | undefined
     type groupconfig = {
