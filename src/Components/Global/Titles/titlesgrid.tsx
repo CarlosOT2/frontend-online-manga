@@ -144,6 +144,27 @@ function TitleInfo({ title, variant, isLoading }: TitleInfoProps) {
                                 <Text not_exceed_X={true} className={`titlegrid__item-name`} tag={'h3'}>
                                     {title.name}
                                 </Text>
+                                <Text
+                                    no_select={true}
+                                    not_exceed_X={true}
+                                    className={`
+                                        titlegrid__item-status
+                                        ${title.status == 1 && 'titlegrid__item-status--blue'}
+                                        ${title.status == 2 && 'titlegrid__item-status--green'}
+                                        `}
+                                    tag={'span'}
+                                >
+                                    {staticMapper("statuses", Number(title.status))}
+                                </Text>
+                                <div style={{ display: "flex" }}>
+                                    <Text no_select={true} not_exceed_X={true} className={`titlegrid__item-contentRating`} tag={'span'}>
+                                        {staticMapper("contentRatings", Number(title.contentRating))}
+                                    </Text>
+                                    <Text no_select={true} not_exceed_X={true} className={`titlegrid__item-demographic`} tag={'span'}>
+                                        {staticMapper("demographics", Number(title.demographic))}
+                                    </Text>
+                                </div>
+
                             </section>
                             :
                             <>

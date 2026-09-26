@@ -47,6 +47,10 @@
             list-style: none;
         }
 
+        &-status {
+            &--fast {}
+        }
+
         &-contentRating {
             @include title-categories.cat-contentRating;
         }
@@ -150,9 +154,34 @@
         margin: 0;
 
         .titlegrid__item {
+            &-info-container {
+                display: grid;
+                grid-template-columns: max-content max-content;
+                grid-template-areas:
+                    "name name"
+                    "status status"
+                    "rating demographic";
+
+                align-content: start;
+                row-gap: 2px;
+                column-gap: 0;
+
+
+            }
+
+            &__link {
+                display: flex;
+                padding: 10px;
+                background: var(--color1);
+                border-radius: border-radius.$border-radius;
+            }
+
             &-name {
+                grid-area: name;
                 margin: 0;
-                font-size: text.$font-size5-25;
+                font-size: text.$font-size5;
+                margin-bottom: 5px;
+                height: fit-content;
             }
 
             &-img {
@@ -160,10 +189,45 @@
                 height: 80px;
             }
 
+            &-status {
+                display: flex;
+                align-items: center;
+                grid-area: status;
+                font-size: text.$font-size5-5;
+                height: fit-content;
+
+                &::before {
+                    content: "";
+                    flex: 0 0 9px;
+                    height: 9px;
+                    margin-right: 5px;
+                    border-radius: 50%;
+                    background-color: var(--false);
+                }
+
+                &--green::Before {
+                    background-color: var(--true);
+                }
+
+                &--blue::before {
+                    background-color: var(--color3);
+                }
+            }
+
+            &-contentRating {
+                grid-area: rating;
+                margin-right: 4px;
+            }
+
+            &-demographic {
+                grid-area: demographic;
+            }
+
             &-article {
                 width: fit-content;
                 gap: 10px;
             }
         }
+
     }
 }

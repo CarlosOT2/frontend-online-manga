@@ -31,8 +31,13 @@ type titlebase = {
 export type fasttitle = {
     id: number
     name: string
-    img: string
     alternativenames?: alternativename[]
+
+    status: number
+    contentRating: number
+    demographic: number
+
+    img: string
 }
 export type titlecompact = titlebase
 
