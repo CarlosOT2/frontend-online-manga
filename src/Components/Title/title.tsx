@@ -24,19 +24,7 @@ import './title.scss'
 import { IoBook } from "react-icons/io5"
 import { MdOutlineGroup } from "react-icons/md";
 import { IoEyeOutline } from "react-icons/io5";
-
-
-function Buttons() {
-    return (
-        <section className='title__header-button-container' role='group'>
-            <Button className='title__header-button' icon={<IoBook className='title__header-button-icon' />}>
-                <Text className='title__header-button-txt' tag='span' no_select={true}>
-                    Start Reading
-                </Text>
-            </Button>
-        </section>
-    )
-}
+import { IoMdClose } from "react-icons/io";
 
 function SectionMeta({ data }: { data: title | undefined }) {
     if (!data) return
@@ -218,12 +206,10 @@ function SectionChapters({ data }: { data: title | undefined }) {
 }
 
 export default function Title() {
-    
-    //.. Variables
     const { titleId } = useParams();
-
-    //.. States
     const [data, setData] = useState<title>()
+    const [isStartReadingMenuOpen, setIsStartReadingMenuOpen] = useState(false);
+
     async function req() {
         const res = await GetTitleById(Number(titleId))
         if (res) setData(res[0])
@@ -263,7 +249,78 @@ export default function Title() {
                                 {data?.authors.join(", ")}
                             </Text>
                         </section>
-                        <Buttons/>
+                        <section className='title__header-button-container' role='group'>
+                            <Button
+                                className='title__header-button'
+                                icon={<IoBook className='title__header-button-icon' />}
+                                onClick={() => setIsStartReadingMenuOpen(true)}
+                            >
+                                <Text className='title__header-button-txt' tag='span' no_select={true}>
+                                    Start Reading
+                                </Text>
+                            </Button>
+                            <div
+                                className={`
+                                    title__menu-start-reading 
+                                    ${isStartReadingMenuOpen ? "title__menu-start-reading--opened" : "title__menu-start-reading--closed"}
+                                `}
+                                onClick={(e) => {
+                                    if (e.target === e.currentTarget) setIsStartReadingMenuOpen(false)
+                                }}
+                            >
+                                <div className="title__menu-start-reading__content">
+                                    <header className="title__menu-start-reading__header">
+                                        <Text tag="h2" className="title__menu-start-reading__header-title">
+                                            Select a translation
+                                        </Text>
+                                        <Button
+                                            className='title__menu-start-reading__header-close-button'
+                                            onClick={() => setIsStartReadingMenuOpen(false)}
+                                        >
+                                            <IoMdClose />
+                                        </Button>
+                                    </header>
+                                    <ul className='title__menu-start-reading__list'>
+                                        {data?.chapters &&
+                                            data?.chapters[0].translations
+                                                .map((translation: chapterTranslation) =>
+                                                    <li className='title__menu-start-reading__list-item'>
+                                                        <Link
+                                                            className='title__menu-start-reading__list-link'
+                                                            to={`/title/${data?.id}/${data?.name}/chaptertranslation/${translation.id}`}
+                                                        >
+                                                            <div className='title__menu-start-reading__list-item__top'>
+                                                                <Img
+                                                                    src={`/flags/${staticMapper('languages', translation.languageId)}.svg`}
+                                                                    className="title__menu-start-reading__list-img"
+                                                                    noPreview={true}
+                                                                />
+                                                                <Text tag='span'>
+                                                                    Ch.{data?.chapters[0].number} - {translation.chapterTitle}
+                                                                </Text>
+                                                                <IoEyeOutline className='title__menu-start-reading__list-icon--view' />
+                                                                <Text tag='span'>
+                                                                    {translation.viewCount}
+                                                                </Text>
+                                                            </div>
+                                                            <div className='title__menu-start-reading__list-item__bottom'>
+                                                                <MdOutlineGroup className='title__menu-start-reading__list-icon--scan' />
+                                                                <Text tag='span' not_exceed_X={true}>
+                                                                    {translation.scanGroupName}
+                                                                </Text>
+                                                                <Text tag='span' className='title__menu-start-reading__list-text--uploaded'>
+                                                                    {timeAgo(translation.uploadedAt)}
+                                                                </Text>
+                                                            </div>
+                                                        </Link>
+
+                                                    </li>
+                                                )
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
                     </section>
                 </header>
                 <article className={'title__content'}>
