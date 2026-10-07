@@ -36,17 +36,6 @@
             flex-direction: column;
         }
 
-        &-hr {
-            padding: 0;
-            margin: 0;
-            border: none;
-
-            width: 100%;
-            height: 1px;
-
-            background-color: var(--color2);
-        }
-
         &-list {
             display: flex;
             flex-wrap: wrap;
@@ -121,6 +110,60 @@
 
     &--latestupdates {
         @extend .titlegrid--card;
+
+        .titlegrid__item-info-container {
+            gap: 3px;
+        }
+
+        .titlegrid__hr {
+            padding: 0;
+            margin: 0;
+            border: none;
+
+            width: 100%;
+            height: 1px;
+
+            margin-top: 5px;
+            margin-bottom: 5px;
+
+            background-color: var(--color2);
+        }
+
+        .titlegrid__img {
+            min-width: 24px;
+            max-width: 24px;
+            height: 24px;
+        }
+
+        .titlegrid__view-count-icon {
+            margin-left: auto;
+            min-width: 20px;
+            max-width: 20px;
+            height: 20px;
+        }
+
+        .titlegrid__view-count-text {
+            font-size: text.$font-size5;
+        }
+
+        .titlegrid__uploadedAt-text {
+            font-size: text.$font-size5;
+            margin-left: auto;
+        }
+
+        .titlegrid__scan-group-icon {
+            min-width: 24px;
+            max-width: 24px;
+            height: 24px;
+        }
+
+        .titlegrid__container-top,
+        .titlegrid__container-bottom {
+            display: flex;
+            align-items: center;
+            height: fit-content;
+            gap: 5px;
+        }
 
     }
 

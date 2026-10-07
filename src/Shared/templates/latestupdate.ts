@@ -6,15 +6,17 @@ let nextId = 0;
 export function createLatestUpdate(): latestupdate {
     return {
         chapterTranslationId: nextId++,
+        chapterTitle: "Chapter Title",
         chapterNumber: "1",
 
         uploadedAt: '2020-10-22 12:59:08.820831+00',
         viewCount: '1',
-        languageId: '1',
-        scanGroupName: 'Template',
+        languageId: 1,
+        scanName: 'Template',
 
         titleId: '1',
         titleName: 'Template',
         titleImg: 'Template'
     }
 }
+

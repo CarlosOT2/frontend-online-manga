@@ -3,9 +3,11 @@ import Text from '../text'
 import Link from '../link'
 import Img from '../img'
 import PreviewLine from '../previewline'
+
 //# Utils //
 import chunkArray from '../../../Shared/utils/chunkArray'
 import { staticMapper } from '../../../Shared/utils/staticHandler'
+import timeAgo from '../../../Shared/utils/timeAgo'
 //# Templates //
 import { createTitle } from '../../../Shared/templates/title'
 import { createLatestUpdate } from '../../../Shared/templates/latestupdate'
@@ -17,6 +19,9 @@ import { latestupdate } from '../../../Shared/types/Data/latestupdates'
 import { grid } from '../../../config/Components/title'
 //# Classes //
 import './titlesgrid.scss'
+//# Icons //
+import { MdOutlineGroup } from "react-icons/md";
+import { IoEyeOutline } from "react-icons/io5";
 
 type TitlesGrid =
     | { variant: 'card'; data?: title[] }
@@ -137,7 +142,30 @@ function TitleInfo({ title, variant, isLoading }: TitleInfoProps) {
                             <Text not_exceed_X={true} className={`titlegrid__item-name`} tag={'h3'}>
                                 {title.titleName}
                             </Text>
-                            <hr className='titlegrid__item-hr' />
+                            <hr className='titlegrid__hr' />
+                            <div className='titlegrid__container-top'>
+                                <Img
+                                    className='titlegrid__img'
+                                    src={`/flags/${staticMapper('languages', title.languageId)}.svg`}
+                                    noPreview={true}
+                                />
+                                <Text tag='span' not_exceed_X={true}>
+                                    Ch.{title.chapterNumber} - {title.chapterTitle}
+                                </Text>
+                                <IoEyeOutline className='titlegrid__view-count-icon'/>
+                                <Text tag='span' className='titlegrid__view-count-text'>
+                                    {title.viewCount}
+                                </Text>
+                            </div>
+                            <div className='titlegrid__container-bottom'>
+                                <MdOutlineGroup className='titlegrid__scan-group-icon'/>
+                                <Text tag='span' not_exceed_X={true}>
+                                    {title.scanName}
+                                </Text>
+                                <Text tag='span' className='titlegrid__uploadedAt-text'>
+                                    {timeAgo(title.uploadedAt)}
+                                </Text>
+                            </div>
                         </section>
                         :
                         variant === 'latestupdatescompact' ?
